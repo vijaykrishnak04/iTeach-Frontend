@@ -1,8 +1,18 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import validator from "validator";
 import { toast } from "react-toastify";
-import { message } from 'antd';
-import { addTeacherApi } from "../../../Services/Admin";
+import { message } from "antd";
+import {
+  addTeacherApi,
+  blockTeacherApi,
+  unblockTeacherApi,
+  deleteTeacherApi,
+} from "../../../Services/Admin";
+import { getTeachers } from "../../../Redux/Features/Admin/getTeachers";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ConfirmationModal from "./ConfirmationModal";
 
 // Modal component for adding a teacher
 // eslint-disable-next-line react/prop-types
@@ -150,32 +160,136 @@ const AddTeacherModal = ({ isOpen, onClose, subjects, onAddTeacher }) => {
 
 const TeacherManage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [teachers, setTeachers] = useState([]);
-  const subjects = ["Math", "Science", "English"]; // Replace this with your subject options
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const dispatch = useDispatch();
+  const [teachers, setTeachers] = useState(
+    useSelector((state) => state.teacherData.teacherList)
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredTeachers = teachers.filter((teacher) => {
+    return (
+      teacher.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.subject.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+  const subjects = ["Math", "Science", "English"];
+
+  useEffect(() => {
+    const headers = {
+      Authorization: localStorage.getItem("adminToken"),
+    };
+    dispatch(getTeachers(headers));
+  }, [dispatch]);
 
   const handleAddTeacher = (teacher) => {
-    addTeacherApi(teacher)
-      .then((response) => {
-        console.log(response);
-        if (response.data.error) {
-          console.log(response.data.message);
-          // setError(response.data.error);
-        } else {
-          message.success("Added Teacher successfully");
-          setTeachers((prevTeachers) => [...prevTeachers, response.data]);
-        }
-      })
-      .catch((err) => {
-        console.log(err.response.data.message);
-        toast.error(err.response.data.message);
-      });
-    
+    try {
+      const headers = {
+        Authorization: localStorage.getItem("adminToken"),
+      };
+      addTeacherApi(teacher, headers)
+        .then((response) => {
+          console.log(response);
+          if (response.data.error) {
+            console.log(response.data.message);
+            // setError(response.data.error);
+          } else {
+            message.success("Added Teacher successfully");
+            setTeachers((prevTeachers) => [...prevTeachers, response.data]);
+          }
+        })
+        .catch((err) => {
+          console.log(err.response.data.message);
+          toast.error(err.response.data.message);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleBlockTeacher = (teacherId) => {
+    try {
+      const headers = {
+        Authorization: localStorage.getItem("adminToken"),
+      };
+      blockTeacherApi(teacherId, headers)
+        .then((response) => {
+          if (response.data.error) {
+            console.error(response.data.message);
+            toast.error(response.data.message);
+          } else {
+            message.success("Teacher blocked successfully");
+            // Assuming response.data contains the updated list of teachers
+            setTeachers(response.data);
+          }
+        })
+        .catch((err) => {
+          console.error(err.response.data.message);
+          toast.error(err.response.data.message);
+        });
+    } catch (err) {
+      console.error(err);
+      toast.error("An unexpected error occurred");
+    }
+  };
+
+  const handleUnblockTeacher = (teacherId) => {
+    try {
+      const headers = {
+        Authorization: localStorage.getItem("adminToken"),
+      };
+      unblockTeacherApi(teacherId, headers)
+        .then((response) => {
+          if (response.data.error) {
+            console.error(response.data.message);
+            toast.error(response.data.message);
+          } else {
+            message.success("Teacher unblocked successfully");
+            // Assuming response.data contains the updated list of teachers
+            setTeachers(response.data);
+          }
+        })
+        .catch((err) => {
+          console.error(err.response.data.message);
+          toast.error(err.response.data.message);
+        });
+    } catch (err) {
+      console.error(err);
+      toast.error("An unexpected error occurred");
+    }
+  };
+
+  const handleRemoveTeacher = (teacherId) => {
+    try {
+      const headers = {
+        Authorization: localStorage.getItem("adminToken"),
+      };
+      deleteTeacherApi(teacherId, headers)
+        .then((response) => {
+          if (response.data.error) {
+            console.error(response.data.message);
+            toast.error(response.data.message);
+          } else {
+            message.success("Teacher removed successfully");
+            // Assuming response.data contains the updated list of teachers
+            setTeachers(response.data);
+          }
+        })
+        .catch((err) => {
+          console.error(err.response.data.message);
+          toast.error(err.response.data.message);
+        });
+    } catch (err) {
+      console.error(err);
+      toast.error("An unexpected error occurred");
+    }
   };
 
   return (
     <div className="mt-10 p-10">
       <p className="text-lg font-bold mt-5">Teacher Management</p>
-      <div className="flex justify-end">
+      <div className="flex justify-end mb-5">
         <button
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500"
           onClick={() => setIsModalOpen(true)}
@@ -184,18 +298,83 @@ const TeacherManage = () => {
         </button>
       </div>
 
-      <div className="mt-4">
-        {/* Display the list of teachers */}
-        {teachers.map((teacher, index) => (
-          <div key={index} className="border rounded p-4 mb-2">
-            <h3 className="font-semibold">{teacher.fullName}</h3>
-            <p>Email: {teacher.email}</p>
-            <p>Subject: {teacher.subject}</p>
-            {/* Action buttons (Block and Remove) */}
-            {/* Add your action button logic here */}
-          </div>
-        ))}
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="p-4">
+          <input
+            type="text"
+            placeholder="Search teachers..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border rounded"
+          />
+        </div>
+        <table className="w-full text-sm text-left text-gray-500 ">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Name
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Email
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Subject
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTeachers.map((teacher, index) => (
+              <tr key={index} className="bg-white border-b hover:bg-gray-50">
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                >
+                  {teacher.fullName}
+                </th>
+                <td className="px-6 py-4">{teacher.email}</td>
+                <td className="px-6 py-4">{teacher.subject}</td>
+                <td className="px-6 py-4 text-left">
+                  {/* Action buttons (Block and Remove) */}
+                  <div className="p-1">
+                    {teacher.isBlocked === false ? (
+                      <button
+                        onClick={() => handleBlockTeacher(teacher._id)}
+                        className="font-medium text-blue-600 hover:underline"
+                      >
+                        Block
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleUnblockTeacher(teacher._id)}
+                        className="font-medium text-blue-600 hover:underline"
+                      >
+                        Unblock
+                      </button>
+                    )}
+                  </div>
+                  <div className="p-1">
+                    <button
+                      onClick={() => handleRemoveTeacher(teacher._id)}
+                      className="font-medium text-red-600 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onCancel={() => setIsConfirmModalOpen(false)}
+      />
       {/* Modal for adding a teacher */}
       <AddTeacherModal
         isOpen={isModalOpen}

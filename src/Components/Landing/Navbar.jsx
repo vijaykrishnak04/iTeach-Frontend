@@ -142,12 +142,19 @@ const NavBar = () => {
       {isModalOpen && (
         <div
           ref={modalRef}
-          className="fixed inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center"
+          className="fixed inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center transition-opacity duration-300 ease-in-out"
           onClick={handleModalClickOutside}
+          style={{ opacity: isModalOpen ? 1 : 0 }}
         >
-          <div className="bg-white p-4 rounded-lg transform transition-all duration-300">
+          <div
+            className="bg-white p-4 rounded-lg transform transition-all duration-300 ease-in-out"
+            style={{
+              transform: isModalOpen ? "scale(1)" : "scale(0.9)",
+              opacity: isModalOpen ? 1 : 0,
+            }}
+          >
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors duration-200"
               onClick={handleModalClose}
             >
               Close
@@ -155,18 +162,16 @@ const NavBar = () => {
             <div className="flex flex-col items-center space-y-4">
               <a
                 href="/teacherlogin"
-                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center"
+                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
               >
                 Login as Teacher
               </a>
               <a
                 href="/login"
-                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center"
+                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
               >
                 Login as Student
               </a>
-           
-
             </div>
           </div>
         </div>
