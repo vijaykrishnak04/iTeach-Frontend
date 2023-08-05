@@ -19,16 +19,14 @@ const initialState = {
 export const StudentAuth = createAsyncThunk(
     "studentData/StudentAuth",
     async (values) => {
-        try {
-            
-            const response = await StudentSignupApi(values)
-            return response.data
-        } catch (err) {
-            message.error(err.response.data.error)
-            console.log(err);
+        const response = await StudentSignupApi(values);
+        console.log(response);
+        if (response.status === 400) {
+            message(response.data.error);
         }
+        return response.data;
     }
-)
+);
 
 export const AuthSlice = createSlice({
     name: "studentData",

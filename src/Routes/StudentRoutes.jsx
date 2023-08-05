@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import HomePage from "../Pages/Student/HomePage";
-import StudentVerification from "../Verification/studentVerification";
+import StudentVerification from "../Verification/StudentVerification";
 
 const StudentRoutes = () => {
   return (

@@ -5,13 +5,13 @@ import { Menu, Dropdown } from "antd";
 const StudentNavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const studentToken = localStorage?.getItem("StudentToken");
+  const studentToken = localStorage?.getItem("studentToken");
 
 
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("StudentToken");
+      localStorage.removeItem("studentToken");
       navigate("/login");
     } catch (error) {
       console.log(error);

@@ -1,24 +1,29 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Menu ,Dropdown } from "antd";
 
-const NavBar = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
+const TeacherNavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const modalRef = useRef();
+  const navigate = useNavigate();
 
-  const handleGetStartedClick = () => {
-    setModalOpen(true);
-  };
 
- 
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
-
-  const handleModalClickOutside = (event) => {
-    if (modalRef.current === event.target) {
-      handleModalClose();
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem("teacherToken");
+      navigate("/teacher-login");
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const teacherMenu = (
+    <Menu>
+      <Menu.Item key="1" onClick={handleLogout}>
+        Sign Out
+      </Menu.Item>
+    </Menu>
+  );
+
 
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
@@ -32,13 +37,21 @@ const NavBar = () => {
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />
           </a>
           <div className="flex md:order-2">
-            <button
-              type="button"
-              className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-orange-400 dark:hover:bg-orange-700 dark:focus:ring-orange-800"
-              onClick={handleGetStartedClick}
-            >
-              Get started
-            </button>
+          <Dropdown overlay={teacherMenu} placement="bottomRight" arrow>
+              <button
+                type="button"
+                className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                id="user-menu-button"
+                aria-expanded="false"
+              >
+                <span className="sr-only">Open user menu</span>
+                <img
+                  className="w-8 h-8 rounded-full border-2 border-gray-600"
+                  src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                  alt="user logo"
+                />
+              </button>
+            </Dropdown>
             <button
               type="button"
               className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -108,47 +121,8 @@ const NavBar = () => {
           </div>
         </div>
       </nav>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div
-          ref={modalRef}
-          className="fixed inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center transition-opacity duration-300 ease-in-out"
-          onClick={handleModalClickOutside}
-          style={{ opacity: isModalOpen ? 1 : 0 }}
-        >
-          <div
-            className="bg-white p-4 rounded-lg transform transition-all duration-300 ease-in-out"
-            style={{
-              transform: isModalOpen ? "scale(1)" : "scale(0.9)",
-              opacity: isModalOpen ? 1 : 0,
-            }}
-          >
-            <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors duration-200"
-              onClick={handleModalClose}
-            >
-              Close
-            </button>
-            <div className="flex flex-col items-center space-y-4 p-6">
-              <a
-                href="/teacher-login"
-                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
-              >
-                Login as Teacher
-              </a>
-              <a
-                href="/login"
-                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
-              >
-                Login as Student
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
 
-export default NavBar;
+export default TeacherNavBar;

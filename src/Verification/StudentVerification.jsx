@@ -1,10 +1,10 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 // eslint-disable-next-line react/prop-types
 export default function StudentVerification({ children }) {
-  const navigate = useNavigate();
+  const location = useLocation();
 
-  const token = JSON.parse(localStorage.getItem('StudentToken'));
+  const token = localStorage.getItem('studentToken');
 
   if (!token) {
     const allowedRoutesForUnauthenticatedUsers = [
@@ -16,11 +16,9 @@ export default function StudentVerification({ children }) {
     if (allowedRoutesForUnauthenticatedUsers.includes(location.pathname)) {
       return children;
     } else {
-      navigate('/login');
-      return null; // Prevent rendering the original component while redirecting.
+      return <Navigate to={'/login'} />; // Prevent rendering the original component while redirecting.
     }
   } else {
-    console.log(token, 'token<<<<<<');
     if (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/otp-page' || location.pathname === '/') {
       return <Navigate to={'/student/home'} />;
     } else {
@@ -29,7 +27,8 @@ export default function StudentVerification({ children }) {
       if (isMatchingRoute && token.role === 'guest') {
         return <div>Guests are not allowed to access this route.</div>; // Replace with an appropriate message or redirect.
       }
+      // Handle all other cases
+      return children;
     }
-    return children;
   }
 }

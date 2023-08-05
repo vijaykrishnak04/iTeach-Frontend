@@ -11,7 +11,7 @@ const AdminRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<AdminVerificaton><Login/></AdminVerificaton>}></Route>
-      <Route path="/dashBoard" element={<AdminVerificaton><DashboardPage/></AdminVerificaton>}></Route>
+      <Route path="/dashboard" element={<AdminVerificaton><DashboardPage/></AdminVerificaton>}></Route>
       <Route path="/teachers" element={<AdminVerificaton><TeacherManagePage/></AdminVerificaton>}></Route>
     </Routes>
   );

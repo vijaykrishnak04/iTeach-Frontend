@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { studentLoginApi } from "../../../Services/LandingService";
+import { teacherLoginApi } from "../../../Services/Teacher";
 
-const Login = () => {
+const TeacherLogin = () => {
   // State to hold the user's input
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,23 +52,23 @@ const Login = () => {
       password: password
     };
 
-    studentLoginApi(formData).then((responce)=>{
+    teacherLoginApi(formData).then((responce)=>{
       if(responce.data.success){
         const jwtToken = responce.data.token;
-        localStorage.setItem("studentToken",jwtToken);
-        navigate('/student/home');
+
+        localStorage.setItem("teacherToken",jwtToken);
+        navigate('/teacher/home');
       }else{
-        console.log(responce);
+        setPasswordError(responce.data.errors)
       }
     }).catch((error)=>{
-      console.log(error);
       setPasswordError(error.response ? error.response.data.message : "An error occurred.")
     })
   };
 
   return (
     <div className="p-8 w-96">
-      <h2 className="text-2xl mb-4 text-center font-bold underline">STUDENT LOGIN</h2>
+      <h2 className="text-2xl mb-4 text-center font-bold underline">TEACHER LOGIN</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="email" className="block font-medium text-gray-700">
@@ -115,4 +115,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default TeacherLogin;

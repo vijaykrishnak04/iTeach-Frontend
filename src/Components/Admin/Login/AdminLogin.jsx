@@ -8,8 +8,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [error, setError] = useState("")
-  console.log(error)
+  
   // Handle input changes
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -29,8 +28,6 @@ const AdminLogin = () => {
       setEmailError("");
     }
   };
-
-  console.log("admin Login")
 
   const validatePassword = () => {
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -61,7 +58,7 @@ const AdminLogin = () => {
         localStorage.setItem("adminToken",jwtToken);
         navigate('/admin/dashBoard');
       }else{
-        setError(responce.data.errors)
+        setPasswordError(responce.data.errors)
       }
     }).catch((error)=>{
       console.log(error);
@@ -69,7 +66,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="bg-white p-8 shadow-md rounded-md w-96">
+    <div className="p-8 w-96">
       <h2 className="text-2xl mb-4 text-center font-bold underline">MAIN ADMIN LOGIN</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

@@ -16,7 +16,6 @@ const OTPPage = () => {
   const navigate = useNavigate();
 
   const StudentAuth = useSelector((state) => state?.studentData?.studentData?.response);
-  console.log(StudentAuth);
 
   const handleChange = (event) => {
     setOtp(event.target.value);
