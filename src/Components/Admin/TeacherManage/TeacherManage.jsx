@@ -1,179 +1,35 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import validator from "validator";
 import { toast } from "react-toastify";
 import { message } from "antd";
 import {
-  addTeacherApi,
-  blockTeacherApi,
-  unblockTeacherApi,
-  deleteTeacherApi,
-} from "../../../Services/Admin";
-import { getTeachers } from "../../../Redux/Features/Admin/getTeachers";
+  addTeacher,
+  getTeachers,
+  deleteTeacher,
+  blockTeacher,
+  unblockTeacher,
+} from "../../../Redux/Features/Admin/getTeachersSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ConfirmationModal from "./ConfirmationModal";
-
-// Modal component for adding a teacher
-// eslint-disable-next-line react/prop-types
-const AddTeacherModal = ({ isOpen, onClose, subjects, onAddTeacher }) => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [errors, setErrors] = useState({});
-
-  const handleSubmit = () => {
-    // Perform validation
-    const errors = {};
-
-    if (validator.isEmpty(fullName)) {
-      errors.fullName = "Full Name is required";
-    }
-
-    if (!validator.isEmail(email)) {
-      errors.email = "Invalid email format";
-    }
-
-    if (validator.isEmpty(password)) {
-      errors.password = "Password is required";
-    }
-
-    if (!validator.equals(password, confirmPassword)) {
-      errors.confirmPassword = "Passwords do not match";
-    }
-
-    if (!selectedSubject) {
-      errors.subject = "Please select a Subject";
-    }
-
-    if (Object.keys(errors).length === 0) {
-      // If there are no errors, add teacher and close the modal
-      onAddTeacher({
-        fullName,
-        email,
-        password,
-        subject: selectedSubject,
-      });
-      onClose();
-    } else {
-      // If there are errors, update the state with the error messages
-      setErrors(errors);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-      <div className="bg-white rounded-md p-6 w-80">
-        <h2 className="text-lg font-semibold mb-4">Add Teacher</h2>
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          className={`w-full p-2 border mb-2 rounded ${
-            errors.fullName ? "border-red-500" : "border-gray-300"
-          }`}
-        />
-        {errors.fullName && (
-          <p className="text-red-500 text-sm mb-2">{errors.fullName}</p>
-        )}
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={`w-full p-2 border mb-2 rounded ${
-            errors.email ? "border-red-500" : "border-gray-300"
-          }`}
-        />
-        {errors.email && (
-          <p className="text-red-500 text-sm mb-2">{errors.email}</p>
-        )}
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className={`w-full p-2 border mb-2 rounded ${
-            errors.password ? "border-red-500" : "border-gray-300"
-          }`}
-        />
-        {errors.password && (
-          <p className="text-red-500 text-sm mb-2">{errors.password}</p>
-        )}
-
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className={`w-full p-2 border mb-2 rounded ${
-            errors.confirmPassword ? "border-red-500" : "border-gray-300"
-          }`}
-        />
-        {errors.confirmPassword && (
-          <p className="text-red-500 text-sm mb-2">{errors.confirmPassword}</p>
-        )}
-
-        <select
-          className={`w-full p-2 border mb-2 rounded ${
-            errors.subject ? "border-red-500" : "border-gray-300"
-          }`}
-          value={selectedSubject}
-          onChange={(e) => setSelectedSubject(e.target.value)}
-        >
-          <option value="" disabled>
-            Select a Subject
-          </option>
-          {subjects.map((subject) => (
-            <option key={subject} value={subject}>
-              {subject}
-            </option>
-          ))}
-        </select>
-        {errors.subject && (
-          <p className="text-red-500 text-sm mb-2">{errors.subject}</p>
-        )}
-
-        <button
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500"
-          onClick={handleSubmit}
-        >
-          Add Teacher
-        </button>
-        <button
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 ml-2"
-          onClick={onClose}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
+import AddTeacherModal from "./AddTeacherModal";
 
 const TeacherManage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const dispatch = useDispatch();
-  const [teachers, setTeachers] = useState(
-    useSelector((state) => state.teacherData.teacherList)
-  );
+  const teachers = useSelector((state) => state.teacherData.teacherList);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredTeachers = teachers.filter((teacher) => {
     return (
-      teacher.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      teacher.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      teacher.subject.toLowerCase().includes(searchTerm.toLowerCase())
+      teacher.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.subject?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
   const subjects = ["Math", "Science", "English"];
 
   useEffect(() => {
@@ -183,103 +39,67 @@ const TeacherManage = () => {
     dispatch(getTeachers(headers));
   }, [dispatch]);
 
-  const handleAddTeacher = (teacher) => {
+  const handleAddTeacher = async (teacher) => {
     try {
-      const headers = {
-        Authorization: localStorage.getItem("adminToken"),
-      };
-      addTeacherApi(teacher, headers)
-        .then((response) => {
-          console.log(response);
-          if (response.data.error) {
-            console.log(response.data.message);
-            // setError(response.data.error);
-          } else {
-            message.success("Added Teacher successfully");
-            setTeachers((prevTeachers) => [...prevTeachers, response.data]);
-          }
-        })
-        .catch((err) => {
-          console.log(err.response.data.message);
-          toast.error(err.response.data.message);
-        });
+      const resultAction = await dispatch(addTeacher({ teacher }));
+      if (addTeacher.fulfilled.match(resultAction)) {
+        if (!resultAction.payload.error) {
+          message.success("Added Teacher successfully");
+        } else {
+          console.log(resultAction.payload.message);
+        }
+      }
     } catch (err) {
       console.log(err);
+      toast.error("An unexpected error occurred");
     }
   };
 
-  const handleBlockTeacher = (teacherId) => {
+  const handleBlockTeacher = async (teacherId) => {
     try {
-      const headers = {
-        Authorization: localStorage.getItem("adminToken"),
-      };
-      blockTeacherApi(teacherId, headers)
-        .then((response) => {
-          if (response.data.error) {
-            console.error(response.data.message);
-            toast.error(response.data.message);
-          } else {
-            message.success("Teacher blocked successfully");
-            // Assuming response.data contains the updated list of teachers
-            setTeachers(response.data);
-          }
-        })
-        .catch((err) => {
-          console.error(err.response.data.message);
-          toast.error(err.response.data.message);
-        });
+      const resultAction = await dispatch(blockTeacher(teacherId));
+      if (blockTeacher.fulfilled.match(resultAction)) {
+        if (!resultAction.payload.error) {
+          message.success("Teacher blocked successfully");
+        } else {
+          console.error(resultAction.payload.message);
+          toast.error(resultAction.payload.message);
+        }
+      }
     } catch (err) {
       console.error(err);
       toast.error("An unexpected error occurred");
     }
   };
 
-  const handleUnblockTeacher = (teacherId) => {
+  const handleUnblockTeacher = async (teacherId) => {
     try {
-      const headers = {
-        Authorization: localStorage.getItem("adminToken"),
-      };
-      unblockTeacherApi(teacherId, headers)
-        .then((response) => {
-          if (response.data.error) {
-            console.error(response.data.message);
-            toast.error(response.data.message);
-          } else {
-            message.success("Teacher unblocked successfully");
-            // Assuming response.data contains the updated list of teachers
-            setTeachers(response.data);
-          }
-        })
-        .catch((err) => {
-          console.error(err.response.data.message);
-          toast.error(err.response.data.message);
-        });
+      const resultAction = await dispatch(unblockTeacher(teacherId));
+      if (unblockTeacher.fulfilled.match(resultAction)) {
+        if (!resultAction.payload.error) {
+          message.success("Teacher unblocked successfully");
+        } else {
+          console.error(resultAction.payload.message);
+          toast.error(resultAction.payload.message);
+        }
+      }
     } catch (err) {
       console.error(err);
       toast.error("An unexpected error occurred");
     }
   };
 
-  const handleRemoveTeacher = (teacherId) => {
+  const handleRemoveTeacher = async (teacherId) => {
     try {
-      const headers = {
-        Authorization: localStorage.getItem("adminToken"),
-      };
-      deleteTeacherApi(teacherId, headers)
-        .then((response) => {
-          if (response.data.error) {
-            console.error(response.data.message);
-            toast.error(response.data.message);
-          } else {
-            message.success("Teacher removed successfully");
-            // Assuming response.data contains the updated list of teachers
-            setTeachers(response.data);
-          }
-        })
-        .catch((err) => {
-          console.error(err.response.data.message);
-          toast.error(err.response.data.message);
-        });
+      const resultAction = await dispatch(deleteTeacher(teacherId));
+      if (deleteTeacher.fulfilled.match(resultAction)) {
+        if (!resultAction.payload.error) {
+          message.success("Teacher removed successfully");
+        } else {
+          console.error(resultAction.payload.message);
+          toast.error(resultAction.payload.message);
+        }
+      }
     } catch (err) {
       console.error(err);
       toast.error("An unexpected error occurred");
