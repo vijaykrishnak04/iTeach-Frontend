@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCoursesApi, addCourseApi, deleteCourseApi, hideCourseApi, unHideCourseApi } from '../../../Services/Admin';
+import { getCoursesApi, addCourseApi, deleteCourseApi, hideCourseApi, unHideCourseApi, editCourseApi } from '../../../Services/Admin';
 import { message } from 'antd';
 
 const initialState = {
@@ -71,6 +71,22 @@ export const deleteCourse = createAsyncThunk('courseData/deleteCourse', async (c
       Authorization: localStorage.getItem("adminToken"),
     };
     const response = await deleteCourseApi(courseId, headers);
+    return response.data;
+  } catch (err) {
+    message.error(err.response.data);
+    throw err;
+  }
+});
+
+export const editCourse = createAsyncThunk('courseData/editCourse', async ( course ) => {
+  try {
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+      Authorization: localStorage.getItem("adminToken"),
+    };
+    const courseData = course.courseData
+    console.log(courseData);
+    const response = await editCourseApi(courseData.id ,courseData, headers);
     return response.data;
   } catch (err) {
     message.error(err.response.data);
@@ -153,6 +169,20 @@ const courseSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = 'Error unhiding course';  // Changed message for hideCourse action
+      })
+
+      .addCase(editCourse.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editCourse.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.courseList.push(action.payload);
+      })
+      .addCase(editCourse.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = 'Error editing course';
       })
   },
 });

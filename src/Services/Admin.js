@@ -25,6 +25,7 @@ export const unblockTeacherApi = (id, headers) => {
 }
 
 export const addCourseApi = (formData, headers) => {
+    console.log(formData);
     return axios.post('/admin/add-course', formData, { headers })
 }
 

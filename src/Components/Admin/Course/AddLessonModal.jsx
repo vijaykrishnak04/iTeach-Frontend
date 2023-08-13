@@ -11,7 +11,7 @@ const AddLessonModal = ({
   const [lessonTitle, setLessonTitle] = useState("");
   const [videoURL, setVideoURL] = useState("");
   const [lessonDescription, setLessonDescription] = useState("");
-  const [, setPdfNotes] = useState(null);
+  const [pdfNotes, setPdfNotes] = useState(null);
 
   useEffect(() => {
     if (lessonToEdit) {
@@ -45,7 +45,7 @@ const AddLessonModal = ({
       lessonTitle,
       videoURL,
       lessonDescription,
-      pdfNotes: null, // update this if you integrate file upload later
+      pdfNotes: pdfNotes,
     };
     saveLesson(lesson);
     clearState(); // Clearing the state after the lesson is added/updated

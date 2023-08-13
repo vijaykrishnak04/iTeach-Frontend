@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { message } from "antd";
+import {Modal, message } from "antd";
 import {
   addTeacher,
   getTeachers,
@@ -11,12 +11,10 @@ import {
 } from "../../../Redux/Features/Admin/getTeachersSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ConfirmationModal from "./ConfirmationModal";
 import AddTeacherModal from "./AddTeacherModal";
 
 const TeacherManage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const dispatch = useDispatch();
   const teachers = useSelector((state) => state.teacherData.teacherList);
 
@@ -40,70 +38,94 @@ const TeacherManage = () => {
   }, [dispatch]);
 
   const handleAddTeacher = async (teacher) => {
-    try {
-      const resultAction = await dispatch(addTeacher({ teacher }));
-      if (addTeacher.fulfilled.match(resultAction)) {
-        if (!resultAction.payload.error) {
-          message.success("Added Teacher successfully");
-        } else {
-          console.log(resultAction.payload.message);
+    Modal.confirm({
+      title: 'Do you want to add this teacher?',
+      async onOk() {
+        try {
+          const resultAction = await dispatch(addTeacher({ teacher }));
+          if (addTeacher.fulfilled.match(resultAction)) {
+            if (!resultAction.payload.error) {
+              message.success("Added Teacher successfully");
+            } else {
+              console.log(resultAction.payload.message);
+            }
+          }
+        } catch (err) {
+          console.log(err);
+          toast.error("An unexpected error occurred");
         }
-      }
-    } catch (err) {
-      console.log(err);
-      toast.error("An unexpected error occurred");
-    }
+      },
+      onCancel() {},
+    });
   };
-
+  
   const handleBlockTeacher = async (teacherId) => {
-    try {
-      const resultAction = await dispatch(blockTeacher(teacherId));
-      if (blockTeacher.fulfilled.match(resultAction)) {
-        if (!resultAction.payload.error) {
-          message.success("Teacher blocked successfully");
-        } else {
-          console.error(resultAction.payload.message);
-          toast.error(resultAction.payload.message);
+    Modal.confirm({
+      title: 'Do you want to block this teacher?',
+      async onOk() {
+        try {
+          const resultAction = await dispatch(blockTeacher(teacherId));
+          if (blockTeacher.fulfilled.match(resultAction)) {
+            if (!resultAction.payload.error) {
+              message.success("Teacher blocked successfully");
+            } else {
+              console.error(resultAction.payload.message);
+              toast.error(resultAction.payload.message);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("An unexpected error occurred");
         }
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("An unexpected error occurred");
-    }
+      },
+      onCancel() {},
+    });
   };
 
   const handleUnblockTeacher = async (teacherId) => {
-    try {
-      const resultAction = await dispatch(unblockTeacher(teacherId));
-      if (unblockTeacher.fulfilled.match(resultAction)) {
-        if (!resultAction.payload.error) {
-          message.success("Teacher unblocked successfully");
-        } else {
-          console.error(resultAction.payload.message);
-          toast.error(resultAction.payload.message);
+    Modal.confirm({
+      title: 'Do you want to unblock this teacher?',
+      async onOk() {
+        try {
+          const resultAction = await dispatch(unblockTeacher(teacherId));
+          if (unblockTeacher.fulfilled.match(resultAction)) {
+            if (!resultAction.payload.error) {
+              message.success("Teacher unblocked successfully");
+            } else {
+              console.error(resultAction.payload.message);
+              toast.error(resultAction.payload.message);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("An unexpected error occurred");
         }
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("An unexpected error occurred");
-    }
+      },
+      onCancel() {},
+    });
   };
-
+  
   const handleRemoveTeacher = async (teacherId) => {
-    try {
-      const resultAction = await dispatch(deleteTeacher(teacherId));
-      if (deleteTeacher.fulfilled.match(resultAction)) {
-        if (!resultAction.payload.error) {
-          message.success("Teacher removed successfully");
-        } else {
-          console.error(resultAction.payload.message);
-          toast.error(resultAction.payload.message);
+    Modal.confirm({
+      title: 'Do you want to remove this teacher?',
+      async onOk() {
+        try {
+          const resultAction = await dispatch(deleteTeacher(teacherId));
+          if (deleteTeacher.fulfilled.match(resultAction)) {
+            if (!resultAction.payload.error) {
+              message.success("Teacher removed successfully");
+            } else {
+              console.error(resultAction.payload.message);
+              toast.error(resultAction.payload.message);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          toast.error("An unexpected error occurred");
         }
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("An unexpected error occurred");
-    }
+      },
+      onCancel() {},
+    });
   };
 
   return (
@@ -189,12 +211,7 @@ const TeacherManage = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onCancel={() => setIsConfirmModalOpen(false)}
-      />
+    
       {/* Modal for adding a teacher */}
       <AddTeacherModal
         isOpen={isModalOpen}

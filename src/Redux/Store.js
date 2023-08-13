@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage'
 import studentAuthReducer from './Features/Student/AuthSlice';
 import getTeachers from './Features/Admin/getTeachersSlice';
 import getCoursesSlice from './Features/Admin/getCoursesSlice';
+import syllabusSlice from './Features/Admin/syllabusSlice'; // Import the syllabus slice
 
 
 const StudentPersistConfig = {
@@ -21,18 +22,23 @@ const CoursePersistConfig = {
     storage
 };
 
-
+const SyllabusPersistConfig = {
+    key: "SyllabusData",
+    storage
+};
 
 
 const persistedStudentReducer = persistReducer(StudentPersistConfig,studentAuthReducer)
 const persistedTeacherReducer = persistReducer(TeacherPersistConfig, getTeachers);
 const persistedCourseReducer = persistReducer(CoursePersistConfig, getCoursesSlice);
+const persistedSyllabusReducer = persistReducer(SyllabusPersistConfig, syllabusSlice); // Persist the syllabus reducer
 
 
 const rootReducer = {
   studentData: persistedStudentReducer,
   teacherData: persistedTeacherReducer,
-  courseData: persistedCourseReducer
+  courseData: persistedCourseReducer,
+  syllabusData: persistedSyllabusReducer
 };
 
  

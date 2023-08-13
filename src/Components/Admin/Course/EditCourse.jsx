@@ -1,20 +1,26 @@
 import { useState } from "react";
 import validator from "validator";
 import AddLessonModal from "./AddLessonModal";
-import { addCourse } from "../../../Redux/Features/Admin/getCoursesSlice";
+import { editCourse } from "../../../Redux/Features/Admin/getCoursesSlice";
 import { toast } from "react-toastify";
 import {Modal, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 
-const AddCourse = () => {
-  const [courseTitle, setCourseTitle] = useState("");
-  const [courseDescription, setCourseDescription] = useState("");
-  const [thumbnail, setThumbnail] = useState(null);
+const EditCourse = () => {
+
+  const location = useLocation();
+  const courseData = location.state?.courseData;
+  
+  const [courseTitle, setCourseTitle] = useState(courseData?.title || "");
+  const [courseDescription, setCourseDescription] = useState(courseData?.description || "");
+  const [thumbnail, setThumbnail] = useState(courseData?.thumbnail.url || null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [lessons, setLessons] = useState([]);
+  const [lessons, setLessons] = useState(courseData?.lessons || []);
   const [editLessonIndex, setEditLessonIndex] = useState(null);
+  const id = courseData._id
 
   const dispatch = useDispatch();
 
@@ -49,10 +55,9 @@ const AddCourse = () => {
     if (file) {
       const fileURL = URL.createObjectURL(file);
       setThumbnail(fileURL);
-      setThumbnailFile(file);  // store the file object
+      setThumbnailFile(file); // store the file object
     }
   };
-  
 
   const validateForm = () => {
     let newErrors = {};
@@ -77,12 +82,13 @@ const AddCourse = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
   
     if (!validateForm()) return;
   
     const courseData = {
+      id,
       courseTitle,
       courseDescription,
       thumbnailFile,
@@ -90,15 +96,15 @@ const AddCourse = () => {
     };
   
     Modal.confirm({
-      title: 'Do you want to add this course?',
-      content: 'Please confirm to add the course.',
+      title: 'Do you want to edit this course?',
+      content: 'Please confirm to edit the course.',
       async onOk() {
         try {
-          const resultAction = await dispatch(addCourse({ courseData }));
-          if (addCourse.fulfilled.match(resultAction)) {
+          const resultAction = await dispatch(editCourse({ courseData }));
+          if (editCourse.fulfilled.match(resultAction)) {
             if (!resultAction.payload.error) {
               navigate("/admin/courses");
-              message.success("Added Course successfully");
+              message.success("Edited Course successfully");
             } else {
               console.log(resultAction.payload.message);
             }
@@ -109,7 +115,7 @@ const AddCourse = () => {
         }
       },
       onCancel() {
-        return;
+        return
       },
     });
   
@@ -123,15 +129,13 @@ const AddCourse = () => {
       className="max-w-4xl mx-auto mt-24 p-6 bg-gray-300 shadow-md rounded-md"
       encType="multipart/form-data"
     >
-      <h2 className="text-xl font-semibold mb-5 text-center">
-        Add a New Course
-      </h2>
+      <h2 className="text-xl font-semibold mb-5 text-center">Edit Course</h2>
       <div className="flex justify-end mt-6">
         <button
           type="submit"
           className="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-500 focus:outline-none focus:greeb-blue-700 focus:shadow-outline-blue active:bg-green-800"
         >
-          Submit Course
+          Update Course
         </button>
       </div>
       <div className="mb-5">
@@ -248,4 +252,4 @@ const AddCourse = () => {
   );
 };
 
-export default AddCourse;
+export default EditCourse;
