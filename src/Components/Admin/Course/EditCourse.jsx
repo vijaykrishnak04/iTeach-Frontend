@@ -1,7 +1,7 @@
 import { useState } from "react";
 import validator from "validator";
 import AddLessonModal from "./AddLessonModal";
-import { editCourse } from "../../../Redux/Features/Admin/getCoursesSlice";
+import { editCourse } from "../../../Redux/Features/Admin/ManageCoursesSlice";
 import { toast } from "react-toastify";
 import {Modal, message } from "antd";
 import { useNavigate } from "react-router-dom";

@@ -11,6 +11,7 @@ export default function StudentVerification({ children }) {
       '/login',
       '/signup',
       '/otp-page',
+      '/'
     ];
 
     if (allowedRoutesForUnauthenticatedUsers.includes(location.pathname)) {

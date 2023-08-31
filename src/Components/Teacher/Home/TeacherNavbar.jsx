@@ -1,16 +1,24 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Menu ,Dropdown } from "antd";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, Dropdown } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faCalendarAlt,
+  faBookOpen,
+  faPencilAlt,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
 
 const TeacherNavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try {
       localStorage.removeItem("teacherToken");
-      navigate("/teacher-login");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -24,23 +32,22 @@ const TeacherNavBar = () => {
     </Menu>
   );
 
-
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
 
   return (
     <>
-      <nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200 shadow-100">
+      <nav className="bg-white fixed w-full max-w-screen z-20 top-0 left-0 border-b border-gray-200 shadow-100 overflow-x-hidden">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <a href="#" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />
-          </a>
+          </Link>
           <div className="flex md:order-2">
-          <Dropdown overlay={teacherMenu} placement="bottomRight" arrow>
+            <Dropdown overlay={teacherMenu} placement="bottomRight" arrow>
               <button
                 type="button"
-                className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                className="flex mr-3 text-smrounded-full md:mr-0"
                 id="user-menu-button"
                 aria-expanded="false"
               >
@@ -79,43 +86,75 @@ const TeacherNavBar = () => {
           </div>
           <div
             className={`${
-              isMenuOpen ? "hidden" : "flex"
-            } items-center justify-between w-full md:w-auto md:order-1 transition-all duration-300`}
+              isMenuOpen ? "flex" : "hidden md:flex"
+            } w-full md:w-auto md:order-1 transition-all duration-1000`}
             id="navbar-sticky"
           >
-            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white">
+            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-4 md:mt-0 md:border-0 md:bg-white">
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-orange-400"
-                  aria-current="page"
+                <Link
+                  to="/teacher/home"
+                  className={`flex flex-col items-center justify-center py-2 px-1 ${
+                    location.pathname === "/teacher/home"
+                      ? "text-orange-600"
+                      : "text-gray-900"
+                  } rounded hover:bg-gray-100 text-sm`}
                 >
-                  Home
-                </a>
+                  <FontAwesomeIcon icon={faHome} />
+                  <span>Home</span>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <Link
+                  to="/teacher/subject"
+                  className={`flex flex-col items-center justify-center py-2 px-1 ${
+                    location.pathname === "/teacher/subject"
+                      ? "text-orange-600"
+                      : "text-gray-900"
+                  } rounded hover:bg-gray-100 text-sm`}
                 >
-                  About
-                </a>
+                  <FontAwesomeIcon icon={faBookOpen} />
+                  <span>Subjects</span>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <Link
+                  to="/teacher/exams"
+                  className={`flex flex-col items-center justify-center py-2 px-1 ${
+                    location.pathname === "/teacher/exams"
+                      ? "text-orange-600"
+                      : "text-gray-900"
+                  } rounded hover:bg-gray-100 text-sm`}
                 >
-                  Services
-                </a>
+                  <FontAwesomeIcon icon={faPencilAlt} />
+                  <span>Exams</span>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <Link
+                  to="/teacher/chats"
+                  className={`flex flex-col items-center justify-center py-2 px-1 ${
+                    location.pathname === "/student/chats"
+                      ? "text-orange-600"
+                      : "text-gray-900"
+                  } rounded hover:bg-gray-100 text-sm`}
                 >
-                  Contact
-                </a>
+                  <FontAwesomeIcon icon={faComments} />
+                  <span>Chats</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/teacher/schedules"
+                  className={`flex flex-col items-center justify-center py-2 px-1 ${
+                    location.pathname === "/teacher/schedules"
+                      ? "text-orange-600"
+                      : "text-gray-900"
+                  } rounded hover:bg-gray-100 text-sm`}
+                >
+                   <FontAwesomeIcon icon={faCalendarAlt} />
+                  <span>Schedules</span>
+                </Link>
               </li>
             </ul>
           </div>

@@ -95,7 +95,7 @@ export const editCourse = createAsyncThunk('courseData/editCourse', async ( cour
 });
 
 const courseSlice = createSlice({
-  name: 'courseData',
+  name: 'adminCourseData',
   initialState,
   reducers: {},
   extraReducers: (builder) => {

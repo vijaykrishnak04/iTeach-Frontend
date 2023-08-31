@@ -9,7 +9,7 @@ import TeacherVerification from "../Verification/TeacherVerification";
 const LandingPageRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={<StudentVerification><Landing/></StudentVerification>}></Route>
       <Route path="/signup" element={<StudentVerification><SignupPage/></StudentVerification>}></Route>
       <Route path='/login' element={<StudentVerification><StudentLoginPage/></StudentVerification>}></Route>
       <Route path="/otp-page" element={<StudentVerification><OtpPage/></StudentVerification>}></Route>

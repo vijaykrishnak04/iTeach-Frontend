@@ -6,7 +6,7 @@ import TeacherManagePage from "../Pages/Admin/TeacherManagePage";
 import CourseManagePage from "../Pages/Admin/CourseManagePage";
 import AddCoursePage from "../Pages/Admin/AddCoursePage";
 import EditCoursePage from "../Pages/Admin/EditCoursePage";
-import SyllabusManagePage from "../Pages/Admin/SyllabusManagePage";
+import ClassManagePage from "../Pages/Admin/ClassManagePage";
 
 
 const AdminRoutes = () => {
@@ -18,7 +18,7 @@ const AdminRoutes = () => {
       <Route path="/courses" element={<AdminVerificaton><CourseManagePage/></AdminVerificaton>}></Route>
       <Route path="/add-course" element={<AdminVerificaton><AddCoursePage/></AdminVerificaton>}></Route>
       <Route path="/edit-course" element={<AdminVerificaton><EditCoursePage/></AdminVerificaton>}></Route>
-      <Route path="/syllabus" element={<AdminVerificaton><SyllabusManagePage/></AdminVerificaton>}></Route>
+      <Route path="/class" element={<AdminVerificaton><ClassManagePage/></AdminVerificaton>}></Route>
     </Routes>
   );
 };

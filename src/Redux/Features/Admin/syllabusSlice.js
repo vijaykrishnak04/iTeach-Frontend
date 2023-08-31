@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getSyllabusesApi, addSyllabusApi, deleteSyllabusApi, editSyllabusApi } from '../../../Services/Admin';
+import { getSyllabusApi, deleteSyllabusApi, addSyllabusApi, editSyllabusApi } from '../../../Services/Admin';
 import { message } from 'antd';
 
 const initialState = {
@@ -15,7 +15,7 @@ export const getSyllabuses = createAsyncThunk('syllabusData/getSyllabuses', asyn
     const headers = {
       Authorization: localStorage.getItem("adminToken"),
     };
-    const response = await getSyllabusesApi(headers);
+    const response = await getSyllabusApi(headers);
     return response.data;
   } catch (err) {
     message.error(err.response.data);
@@ -81,7 +81,51 @@ const syllabusSlice = createSlice({
         state.isError = true;
         state.message = 'Error fetching syllabus list';
       })
-      // Similar cases for addSyllabus, deleteSyllabus, and editSyllabus
+
+      .addCase(addSyllabus.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(addSyllabus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.syllabusList.push(action.payload); // or update it as required
+      })
+      .addCase(addSyllabus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = 'Error adding syllabus';
+      })
+
+      
+      .addCase(deleteSyllabus.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteSyllabus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.syllabusList = state.syllabusList.filter(syllabus => syllabus._id !== action.payload); // Assuming the payload includes the deleted syllabus
+      })
+      .addCase(deleteSyllabus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = 'Error deleting syllabus';
+      })
+      .addCase(editSyllabus.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editSyllabus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const index = state.syllabusList.findIndex(syllabus => syllabus._id === action.payload._id); // Assuming the payload includes the updated syllabus with an _id field
+        if (index > -1) {
+          state.syllabusList[index] = action.payload; // Replace the existing syllabus with the updated one
+        }
+      })
+      .addCase(editSyllabus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = 'Error editing syllabus';
+      });
   },
 });
 

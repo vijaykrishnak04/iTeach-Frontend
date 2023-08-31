@@ -6,12 +6,12 @@ import {
   hideCourse,
   unHideCourse,
   deleteCourse,
-} from "../../../Redux/Features/Admin/getCoursesSlice";
+} from "../../../Redux/Features/Admin/ManageCoursesSlice";
 import {Modal, message } from "antd";
 import { toast } from "react-toastify";
 
 const CourseManage = () => {
-  const courses = useSelector((state) => state.courseData.courseList);
+  const courses = useSelector((state) => state.adminCourseData.courseList);
 
   const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useDispatch();
@@ -21,16 +21,16 @@ const CourseManage = () => {
     navigate("/admin/add-course");
   };
 
-  const filteredCourses = courses.filter((course) => {
-    return course.title.toLowerCase().includes(searchTerm.toLowerCase());
-    // Add other fields to search as required
-  });
+  const filteredCourses = Array.isArray(courses)
+  ? courses.filter((course) => {
+      return course.title.toLowerCase().includes(searchTerm.toLowerCase());
+    })
+  : [];
+
+  
 
   useEffect(() => {
-    const headers = {
-      Authorization: localStorage.getItem("adminToken"),
-    };
-    dispatch(getCourses(headers));
+    dispatch(getCourses());
   }, [dispatch]);
 
   const handleEditCourse = (courseId) => {
@@ -180,7 +180,6 @@ const handleRemoveCourse = async (courseId) => {
                     width="75"
                     height="75"
                   />
-                  <p>{course.thumbnail.public_id}</p>
                 </td>
                 <td className="px-6 py-4">{course.title}</td>
                 <td className="px-6 py-4">{course.lessons.length}</td>

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { toast } from "react-toastify";
-import {Modal, message } from "antd";
+import { Modal, message } from "antd";
 import {
   addTeacher,
   getTeachers,
@@ -39,10 +39,10 @@ const TeacherManage = () => {
 
   const handleAddTeacher = async (teacher) => {
     Modal.confirm({
-      title: 'Do you want to add this teacher?',
+      title: "Do you want to add this teacher?",
       async onOk() {
         try {
-          const resultAction = await dispatch(addTeacher({ teacher }));
+          const resultAction = await dispatch(addTeacher(teacher));
           if (addTeacher.fulfilled.match(resultAction)) {
             if (!resultAction.payload.error) {
               message.success("Added Teacher successfully");
@@ -58,10 +58,10 @@ const TeacherManage = () => {
       onCancel() {},
     });
   };
-  
+
   const handleBlockTeacher = async (teacherId) => {
     Modal.confirm({
-      title: 'Do you want to block this teacher?',
+      title: "Do you want to block this teacher?",
       async onOk() {
         try {
           const resultAction = await dispatch(blockTeacher(teacherId));
@@ -84,7 +84,7 @@ const TeacherManage = () => {
 
   const handleUnblockTeacher = async (teacherId) => {
     Modal.confirm({
-      title: 'Do you want to unblock this teacher?',
+      title: "Do you want to unblock this teacher?",
       async onOk() {
         try {
           const resultAction = await dispatch(unblockTeacher(teacherId));
@@ -104,10 +104,10 @@ const TeacherManage = () => {
       onCancel() {},
     });
   };
-  
+
   const handleRemoveTeacher = async (teacherId) => {
     Modal.confirm({
-      title: 'Do you want to remove this teacher?',
+      title: "Do you want to remove this teacher?",
       async onOk() {
         try {
           const resultAction = await dispatch(deleteTeacher(teacherId));
@@ -211,7 +211,7 @@ const TeacherManage = () => {
           </tbody>
         </table>
       </div>
-    
+
       {/* Modal for adding a teacher */}
       <AddTeacherModal
         isOpen={isModalOpen}

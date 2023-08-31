@@ -1,21 +1,24 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { message } from 'antd';
-import validator from 'validator'; // Import the validator library
-import { otpData } from '../../../Redux/Features/Student/OtpSlice';
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { message } from "antd";
+import validator from "validator"; // Import the validator library
+import { otpData } from "../../../Redux/Features/Student/OtpSlice";
+import { Modal } from "antd";
 
-const OTPPage = () => {
-  const [otp, setOtp] = useState('');
+const OTPPage = ({ isVisible, onClose }) => {
+  const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState(() => {
-    const storedTimer = sessionStorage.getItem('otpTimer');
+    const storedTimer = sessionStorage.getItem("otpTimer");
     return storedTimer ? JSON.parse(storedTimer) : 60;
   });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const StudentAuth = useSelector((state) => state?.studentData?.studentData?.response);
+  const StudentAuth = useSelector(
+    (state) => state?.studentData?.studentData?.response
+  );
 
   const handleChange = (event) => {
     setOtp(event.target.value);
@@ -26,7 +29,9 @@ const OTPPage = () => {
     try {
       // Validate the entered OTP using the validator library
       if (!validator.isNumeric(otp) || otp.length !== 6) {
-        message.error('Invalid OTP format. Please enter a valid 6-digit numeric OTP.');
+        message.error(
+          "Invalid OTP format. Please enter a valid 6-digit numeric OTP."
+        );
         return;
       }
 
@@ -37,11 +42,12 @@ const OTPPage = () => {
       const response = await dispatch(otpData(dataToSend));
       if (response) {
         console.log(response);
-        navigate('/login');
-        message.success('OTP Verified Successfully');
+        navigate("/login");
+        message.success("OTP Verified Successfully");
+        onClose();
       }
     } catch (error) {
-      console.log('Error occurred during OTP confirmation:', error);
+      console.log("Error occurred during OTP confirmation:", error);
     }
   };
 
@@ -62,13 +68,19 @@ const OTPPage = () => {
 
   useEffect(() => {
     // Persist the timer in session storage
-    sessionStorage.setItem('otpTimer', JSON.stringify(timer));
+    sessionStorage.setItem("otpTimer", JSON.stringify(timer));
   }, [timer]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form onSubmit={handleSubmit} className="w-64 p-8 bg-gray-100 rounded shadow-md">
-        <h2 className="text-2xl mb-4">Enter OTP</h2>
+    <Modal
+      title="Enter OTP"
+      visible={isVisible}
+      onCancel={onClose}
+      footer={null}
+    >
+      <form
+        onSubmit={handleSubmit}
+      >
         <input
           type="text"
           value={otp}
@@ -85,9 +97,7 @@ const OTPPage = () => {
           Submit
         </button>
         {timer > 0 && (
-          <p className="mt-2 text-center">
-            Resend OTP in {timer} seconds
-          </p>
+          <p className="mt-2 text-center">Resend OTP in {timer} seconds</p>
         )}
         {timer === 0 && (
           <button
@@ -99,7 +109,7 @@ const OTPPage = () => {
           </button>
         )}
       </form>
-    </div>
+    </Modal>
   );
 };
 

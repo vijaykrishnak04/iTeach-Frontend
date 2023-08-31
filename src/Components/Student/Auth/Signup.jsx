@@ -1,196 +1,325 @@
 import { useState } from "react";
-import validator from "validator";
 import { useDispatch } from "react-redux";
 import { StudentAuth } from "../../../Redux/Features/Student/AuthSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import OTPPage from "../Otp/Otp";
 
 const Signup = () => {
   // State to hold user input
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [phoneNumberError, setPhoneNumberError] = useState("");
+
+  const [isOTPModalVisible, setIsOTPModalVisible] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Validation function
-  const validate = () => {
-    const errors = {};
 
-    if (!fullName) {
-      errors.fullName = "Full Name is required";
+  const handlePhoneNumberChange = (e) => {
+    const currentValue = e.target.value;
+    setPhoneNumber(currentValue);
+    validatePhoneNumber(currentValue);
+  };
+
+  const validatePhoneNumber = (value) => {
+    const phoneNumberPattern = /^[0-9]{10}$/;
+    if (!phoneNumberPattern.test(value)) {
+      setPhoneNumberError("Please enter a valid 10-digit phone number");
+    } else {
+      setPhoneNumberError("");
     }
+  };
 
-    if (!email) {
-      errors.email = "Email is required";
-    } else if (!validator.isEmail(email)) {
-      errors.email = "Invalid email address";
+  const handleEmailChange = (e) => {
+    const currentValue = e.target.value;
+    setEmail(currentValue);
+    validateEmail(currentValue);
+  };
+
+  const validateEmail = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setEmailError("Please enter a valid email address");
+    } else {
+      setEmailError("");
     }
+  };
 
-    if (!password) {
-      errors.password = "Password is required";
-    } else if (password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+  const handlePasswordChange = (e) => {
+    const currentValue = e.target.value;
+    setPassword(currentValue);
+    validatePassword(currentValue);
+  };
+
+  const validatePassword = (value) => {
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordPattern.test(value)) {
+      setPasswordError(
+        "Password must be at least 8 characters long and contain at least one letter and one number"
+      );
+    } else {
+      setPasswordError("");
     }
+  };
 
-    if (!confirmPassword) {
-      errors.confirmPassword = "Confirm Password is required";
-    } else if (password !== confirmPassword) {
-      errors.confirmPassword = "Passwords must match";
+  const handleConfirmPasswordChange = (e) => {
+    const currentValue = e.target.value;
+    setConfirmPassword(currentValue);
+    validateConfirmPassword(currentValue, password); // pass the password as the second argument
+  };
+
+  const validateConfirmPassword = (value, pass) => {
+    if (value !== pass) {
+      setConfirmPasswordError("Passwords do not match");
+    } else {
+      setConfirmPasswordError("");
     }
-
-    if (!phoneNumber) {
-      errors.phoneNumber = "Phone Number is required";
-    } else if (!validator.isNumeric(phoneNumber) || phoneNumber.length !== 10) {
-      errors.phoneNumber = "Invalid phone number";
-    }
-
-    return errors;
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
-    try {
-      e.preventDefault();
-      const errors = validate();
+    e.preventDefault();
 
-      if (Object.keys(errors).length === 0) {
-        // Add signup logic here (e.g., API call)
-        const values = {
-          fullName,
-          email,
-          password,
-          confirmPassword,
-          phoneNumber,
-        };
-        dispatch(StudentAuth(values)).then((response) => {
-          if (StudentAuth.fulfilled.match(response)) {
-            console.log(response);
-            navigate("/otp-page");
-          } else if (StudentAuth.rejected.match(response)) {
-            toast.error(response.error.message);
-            console.log(response.error);
-          }
-        });
-      } else {
-        console.log("Validation Errors:", errors);
-      }
-    } catch (err) {
-      toast.error(err.response.data.error);
-      console.log(err.response);
+    // Validate all fields before submission
+
+    if (
+      emailError ||
+      passwordError ||
+      confirmPasswordError ||
+      phoneNumberError
+    ) {
+      return;
     }
+
+    const values = {
+      fullName,
+      email,
+      password,
+      confirmPassword,
+      phoneNumber,
+    };
+
+    dispatch(StudentAuth(values))
+      .then((response) => {
+        if (StudentAuth.fulfilled.match(response)) {
+          setIsOTPModalVisible(true);
+        } else if (response.error || StudentAuth.rejected.match(response)) {
+          setEmailError(response.payload.error);
+          toast.error(response.error.message);
+        }
+      })
+      .catch((err) => {
+        toast.error(err.response.data.error);
+        console.log(err.response);
+      });
   };
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-orange-300 p-8 h-80 w-96 flex justify-center">
-          <div>
-            <div className="flex justify-center">
-              <p>Hey! Welcome</p>
+      <div className="min-h-screen flex items-center justify-center bg-zinc-800">
+        <div className="bg-white shadow-xl rounded-lg w-full max-w-3xl overflow-hidden">
+          <div className="flex flex-col md:flex-row">
+            <div className=" text-white lg-p-8 w-full md:w-1/2 flex flex-col justify-center items-center">
+              <p className="text-2xl font-semibold mb-4 text-black">
+                Hey! Welcome
+              </p>
+              <img
+                src="/pngwing.com.png"
+                alt="childrens in class"
+                className="w-3/4 hidden md:block"
+              />
             </div>
+            <div className="p-8 w-full md:w-1/2">
+              <h2 className="text-xl font-semibold mb-4 text-gray-700">
+                Sign Up
+              </h2>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  {/* Full Name Input */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="fullName"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      id="fullName"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="mt-1 px-4 py-2 w-full rounded-lg focus:outline-none border focus:border-blue-500"
+                      required
+                    />
+                  </div>
 
-            <div>
-              <img src="/pngwing.com.png" alt="childrens in class" />
+                  {/* Email Input */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="email"
+                      className={`block text-sm font-medium ${
+                        emailError ? "text-red-700" : "text-gray-700"
+                      }`}
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={handleEmailChange}
+                      className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
+                        emailError
+                          ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
+                          : "border focus:border-blue-500"
+                      }`}
+                      required
+                    />
+                    {emailError && (
+                      <p className="mt-2 text-sm text-red-600">
+                        <span className="font-medium">Oops!</span> {emailError}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* password input*/}
+                  <div className="mb-4 relative">
+                    <label
+                      htmlFor="password"
+                      className={`block text-sm font-medium ${
+                        passwordError ? "text-red-700" : "text-gray-700"
+                      }`}
+                    >
+                      Password
+                    </label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      value={password}
+                      onChange={handlePasswordChange}
+                      className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
+                        passwordError
+                          ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
+                          : "border focus:border-blue-500"
+                      }`}
+                      required
+                    />
+                    <span className="absolute right-2 top-2/3 transform -translate-y-1/2 cursor-pointer">
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEyeSlash : faEye}
+                        onClick={handleTogglePassword}
+                      />
+                    </span>
+                    {passwordError && (
+                      <p className="mt-2 text-sm text-red-600">
+                        <span className="font-medium">Oops!</span>{" "}
+                        {passwordError}
+                      </p>
+                    )}
+                  </div>
+                  {/* confirm password input*/}
+                  <div className="mb-4 relative">
+                    <label
+                      htmlFor="confirmPassword"
+                      className={`block text-sm font-medium ${
+                        confirmPasswordError ? "text-red-700" : "text-gray-700"
+                      }`}
+                    >
+                      Confirm password
+                    </label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="confirmPassword"
+                      value={confirmPassword}
+                      onChange={handleConfirmPasswordChange}
+                      className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
+                        confirmPasswordError
+                          ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
+                          : "border focus:border-blue-500"
+                      }`}
+                      required
+                    />
+                    <span className="absolute right-2 top-2/3 transform -translate-y-1/2 cursor-pointer">
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEyeSlash : faEye}
+                        onClick={handleTogglePassword}
+                      />
+                    </span>
+                    {confirmPasswordError && (
+                      <p className="mt-2 text-sm text-red-600">
+                        <span className="font-medium">Oops!</span>{" "}
+                        {confirmPasswordError}
+                      </p>
+                    )}
+                  </div>
+                  {/* password input*/}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="phone"
+                      className={`block text-sm font-medium ${
+                        phoneNumberError ? "text-red-700" : "text-gray-700"
+                      }`}
+                    >
+                      phoneNumber
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      value={phoneNumber}
+                      onChange={handlePhoneNumberChange}
+                      className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
+                        phoneNumberError
+                          ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
+                          : "border focus:border-blue-500"
+                      }`}
+                      required
+                    />
+                    {phoneNumberError && (
+                      <p className="mt-2 text-sm text-red-600">
+                        <span className="font-medium">Oops!</span>{" "}
+                        {phoneNumberError}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center mt-4">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-3xl w-60 h-14 font-bold text-white bg-green-900 hover:bg-green-700 focus:outline-none"
+                  >
+                    Sign Up
+                  </button>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="text-blue-500 mt-2 hover:underline"
+                  >
+                    Already have an account? login
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-        <div className="bg-white p-8 shadow-md rounded-md w-96">
-          <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label
-                htmlFor="fullName"
-                className="block font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="fullName"
-                className="mt-1 px-4 py-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                className="mt-1 px-4 py-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                className="mt-1 px-4 py-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="confirmPassword"
-                className="block font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                className="mt-1 px-4 py-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label
-                htmlFor="phoneNumber"
-                className="block font-medium text-gray-700"
-              >
-                Phone Number
-              </label>
-              <input
-                type="text"
-                id="phoneNumber"
-                className="mt-1 px-4 py-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                required
-              />
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
-              >
-                Sign Up
-              </button>
-            </div>
-          </form>
-        </div>
+        <OTPPage
+          isVisible={isOTPModalVisible}
+          onClose={() => setIsOTPModalVisible(false)}
+        />
       </div>
     </>
   );

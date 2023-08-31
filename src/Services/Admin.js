@@ -4,6 +4,9 @@ export const adminLoginApi = (formData) => {
     return axios.post('/admin/login', formData)
 }
 
+
+//teacher
+
 export const addTeacherApi = (formData, headers) => {
     return axios.post('/admin/add-teacher', formData, { headers })
 }
@@ -23,6 +26,9 @@ export const blockTeacherApi = (id, headers) => {
 export const unblockTeacherApi = (id, headers) => {
     return axios.patch(`/admin/unblock-teacher/${id}`, null, { headers });
 }
+
+
+//course 
 
 export const addCourseApi = (formData, headers) => {
     console.log(formData);
@@ -48,3 +54,31 @@ export const unHideCourseApi = (id, headers) => {
 export const editCourseApi = (id, formData, headers) => {
     return axios.put(`/admin/edit-course/${id}`,formData , { headers })
 }
+
+//syllabus
+
+export const getSyllabusApi = (headers) => {
+    return axios.get('/admin/get-syllabus', { headers });
+}
+
+export const addSyllabusApi = (syllabusData, headers) => {
+    return axios.post('/admin/add-syllabus', syllabusData, { headers });
+}
+
+export const deleteSyllabusApi = (id, headers) => {
+    return axios.delete(`/admin/delete-syllabus/${id}`, { headers });
+}
+
+export const editSyllabusApi = (id, formData, headers) => {
+    return axios.put(`/admin/edit-syllabus/${id}`, formData, { headers });
+}
+
+export const hideSyllabusApi = (id, headers) => {
+    return axios.patch(`/admin/hide-syllabus/${id}`, null, { headers });
+}
+
+export const unHideSyllabusApi = (id, headers) => {
+    return axios.patch(`/admin/unhide-syllabus/${id}`, null, { headers });
+}
+
+

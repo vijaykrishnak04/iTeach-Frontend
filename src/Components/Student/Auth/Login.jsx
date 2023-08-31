@@ -1,23 +1,30 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { studentLoginApi } from "../../../Services/LandingService";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { StudentLogin } from "../../../Redux/Features/Student/AuthSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
   // State to hold the user's input
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  
+  const [showPassword, setShowPassword] = useState(false);
+
+  const dispatch = useDispatch();  
+  const navigate = useNavigate();
+
   // Handle input changes
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
+    validateEmail();  // Add this line
   };
-
-  const navigate = useNavigate();
-
+  
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+    validatePassword();  // Add this line
   };
 
   const validateEmail = () => {
@@ -47,70 +54,159 @@ const Login = () => {
     validateEmail();
     validatePassword();
 
+    if (emailError || passwordError) {
+      // If there's an error, we stop here and don't proceed with the login attempt.
+      return;
+    }
+
     const formData = {
       email: email,
-      password: password
+      password: password,
     };
 
-    studentLoginApi(formData).then((responce)=>{
-      if(responce.data.success){
-        const jwtToken = responce.data.token;
-        localStorage.setItem("studentToken",jwtToken);
-        navigate('/student/home');
-      }else{
-        console.log(responce);
-      }
-    }).catch((error)=>{
-      console.log(error);
-      setPasswordError(error.response ? error.response.data.message : "An error occurred.")
-    })
+    dispatch(StudentLogin(formData))
+      .then((responseAction) => {
+        if (StudentLogin.fulfilled.match(responseAction)) {
+          const jwtToken = responseAction.payload.token;
+          localStorage.setItem("studentToken", jwtToken);
+          navigate("/student/home");
+        } else if (StudentLogin.rejected.match(responseAction)) {
+          if (
+            responseAction.payload.message ===
+            "The user with the email does not exist"
+          ) {
+            setEmailError(responseAction.payload.message);
+          } else {
+            setPasswordError(responseAction.payload.message);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setPasswordError(error.message ? error.message : "An error occurred.");
+      });
   };
 
   return (
-    <div className="p-8 w-96">
-      <h2 className="text-2xl mb-4 text-center font-bold underline">STUDENT LOGIN</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="email" className="block font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="text"
-            id="email"
-            className="mt-1 px-4 py-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-            value={email}
-            onChange={handleEmailChange}
-            required
-          />
-          {emailError && (
-              <p className="text-red-500 text-center w-[300px]">{emailError}</p>
-            )}
+    <div className="min-h-screen flex items-center justify-center bg-zinc-800">
+      <div className="bg-white shadow-xl rounded-lg w-full max-w-3xl overflow-hidden">
+        <div className="flex flex-col md:flex-row">
+          <div className="text-white p-8 w-full md:w-1/2 flex flex-col justify-center items-center">
+            <p className="text-2xl font-semibold mb-4 text-black">
+              Hey! Welcome
+            </p>
+            <img
+              src="/pngwing.com.png"
+              alt="childrens in class"
+              className="w-3/4"
+            />
+          </div>
+          <div className="p-8 w-full md:w-1/2">
+            <div className="p-8">
+              <h2 className="text-2xl mb-4 text-center font-bold underline">
+                STUDENT LOGIN
+              </h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label
+                    htmlFor="email"
+                    className={`block text-sm font-medium ${
+                      emailError
+                        ? "text-red-700 dark:text-red-500"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    Email
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
+                      emailError
+                        ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
+                        : "border focus:border-blue-500"
+                    }`}
+                    value={email}
+                    onChange={handleEmailChange}
+                    required
+                  />
+                  {emailError && (
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                      <span className="font-medium">Oops!</span> {emailError}
+                    </p>
+                  )}
+                </div>
+                <div className="mb-6 relative">
+                  <label
+                    htmlFor="password"
+                    className={`block text-sm font-medium ${
+                      passwordError
+                        ? "text-red-700 dark:text-red-500"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    Password
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
+                        passwordError
+                          ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
+                          : "border focus:border-blue-500"
+                      }`}
+                      value={password}
+                      onChange={handlePasswordChange}
+                      required
+                    />
+                    <button
+                      type="button"
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "10px",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                      }}
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <FontAwesomeIcon icon={faEyeSlash} />
+                      ) : (
+                        <FontAwesomeIcon icon={faEye} />
+                      )}
+                    </button>
+                  </div>
+                  {passwordError && (
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                      <span className="font-medium">Oops!</span> {passwordError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-center mb-4">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-3xl w-60 h-14 font-bold text-white bg-green-900 hover:bg-green-700 focus:outline-none"
+                  >
+                    LOGIN
+                  </button>
+                </div>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => navigate("/signup")}
+                    className="text-blue-500 hover:underline"
+                  >
+                    Don`t have an account? Sign up
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        <div className="mb-6">
-          <label htmlFor="password" className="block font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            className="mt-1 px-4 py-2 w-full border rounded-md focus:outline-none focus:border-blue-500"
-            value={password}
-            onChange={handlePasswordChange}
-            required
-          />
-          {passwordError && (
-              <p className="text-red-500 text-center w-[300px]">{passwordError}</p>
-            )}
-        </div>
-        <div className="flex justify-center">
-          <button
-            type="submit"
-            className="px-4 py-2 rounded-3xl w-60 h-14 font-bold text-white bg-green-900 hover:bg-green-700 focus:outline-none"
-          >
-            LOGIN
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };

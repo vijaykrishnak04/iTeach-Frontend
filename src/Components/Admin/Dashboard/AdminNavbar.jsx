@@ -37,6 +37,8 @@ const AdminNavBar = () => {
     setMenuOpen(!isMenuOpen);
   };
 
+  const currentPath = window.location.pathname;
+
   return (
     <>
       <nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200 shadow-100">
@@ -45,7 +47,7 @@ const AdminNavBar = () => {
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />
           </a>
           <div className="flex md:order-2">
-            <Dropdown overlay={userMenu} placement="bottomRight" arrow>
+            <Dropdown menu={userMenu} placement="bottomRight" arrow>
               <button
                 type="button"
                 className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
@@ -95,7 +97,11 @@ const AdminNavBar = () => {
               <li>
                 <a
                   href="/admin/dashBoard"
-                  className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-orange-400"
+                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
+                    currentPath === "/admin/dashBoard"
+                      ? "md:text-orange-400"
+                      : ""
+                  } md:p-0`}
                   aria-current="page"
                 >
                   Home
@@ -104,23 +110,33 @@ const AdminNavBar = () => {
               <li>
                 <a
                   href="/admin/teachers"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
+                    currentPath === "/admin/teachers"
+                      ? "md:text-orange-400"
+                      : ""
+                  } md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
                 >
                   Teacher
                 </a>
               </li>
               <li>
                 <a
-                  href="/admin/syllabus"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  href="/admin/class"
+                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
+                    currentPath === "/admin/class"
+                      ? "md:text-orange-400"
+                      : ""
+                  } md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
                 >
-                  Syllabus
+                  Class
                 </a>
               </li>
               <li>
                 <a
                   href="/admin/courses"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
+                    currentPath === "/admin/courses" ? "md:text-orange-400" : ""
+                  } md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
                 >
                   Courses
                 </a>
