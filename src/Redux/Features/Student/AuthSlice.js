@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { StudentSignupApi, studentLoginApi } from '../../../Services/LandingService'
-import { message } from 'antd'
-import { getStudentByIdApi } from '../../../Services/Student';
+import { editStudentApi, getStudentByIdApi } from '../../../Services/Student';
 
 
 
@@ -22,7 +21,6 @@ export const StudentAuth = createAsyncThunk(
     async (values, thunkAPI) => {
         try {
             const response = await StudentSignupApi(values);
-            console.log(response);
             if (response.status !== 200) { // Assuming 200 is the success code
                 throw new Error(response.data.error || 'Unexpected error occurred.');
             }
@@ -73,6 +71,34 @@ export const getStudentById = createAsyncThunk(
         }
     }
 );
+
+// Async thunk for editing student data
+export const editStudent = createAsyncThunk(
+    "studentData/editStudent",
+    async ({ studentId, studentData }, thunkAPI) => {
+        try {
+            const headers = {
+                Authorization: localStorage.getItem("studentToken"),
+            };
+            const response = await editStudentApi(studentId, studentData, headers);
+
+            if (response.status !== 200) { // Assuming 200 is the success code
+                throw new Error(response.data.error || 'Unexpected error occurred.');
+            }
+
+            return response.data;
+
+        } catch (error) {
+            if (error.response && error.response.data) {
+                // Use thunkAPI.rejectWithValue to dispatch a rejected action
+                return thunkAPI.rejectWithValue(error.response.data);
+            }
+            // If there's no detailed error, throw a more generic one
+            return thunkAPI.rejectWithValue('An error occurred while editing student data.');
+        }
+    }
+);
+
 
 
 
@@ -139,6 +165,25 @@ export const AuthSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload || 'An error occurred while fetching student details.';
+            })
+            .addCase(editStudent.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(editStudent.fulfilled, (state, action) => {
+                state.isLoading = false;
+                if (action.payload && action.payload.success) {
+                    state.isSuccess = true;
+                    // Maybe merge new student data or replace the old one
+                    state.studentData = { ...state.studentData, ...action.payload.data };
+                } else {
+                    state.isError = true;
+                    state.message = action.payload.error;
+                }
+            })
+            .addCase(editStudent.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload || 'An error occurred while editing student data.';
             })
     }
 })

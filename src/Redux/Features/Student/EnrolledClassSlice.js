@@ -3,7 +3,7 @@ import { checkIfStudentHasEnrolledApi } from '../../../Services/Student';
 import { message } from 'antd';
 
 const initialState = {
-    enrolledClass: null, 
+    enrolledClass: null,
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -11,7 +11,7 @@ const initialState = {
 };
 
 export const checkIfStudentHasEnrolled = createAsyncThunk(
-    'enrollmentData/checkIfStudentHasEnrolled', 
+    'enrollmentData/checkIfStudentHasEnrolled',
     async (studentId) => {
         try {
             const headers = {
@@ -20,7 +20,7 @@ export const checkIfStudentHasEnrolled = createAsyncThunk(
             const response = await checkIfStudentHasEnrolledApi(studentId, headers);
             return response.data;
         } catch (err) {
-            message.error(err.response.data);
+            message.error(err.response.data.message);
             throw err;
         }
     }
@@ -52,8 +52,14 @@ const enrollmentSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.error.message || 'Error checking enrollment status';
+
+                // Resetting the state when error occurs
+                state.enrolledClass = null;
+                state.isSuccess = false;
             })
     },
 });
 
+export const { resetEnrollmentState } = enrollmentSlice.actions;
 export default enrollmentSlice.reducer;
+

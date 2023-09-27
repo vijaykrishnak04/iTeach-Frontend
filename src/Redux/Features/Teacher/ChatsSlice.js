@@ -1,0 +1,110 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { message } from 'antd';
+import { fetchChatMessagesApi, fetchChatListApi } from '../../../Services/Teacher';
+
+const initialState = {
+    chatMessages: [],
+    chatList: [], // list of students who've messaged
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    message: '',
+};
+
+// Fetch chat messages with a student
+export const fetchChatMessages = createAsyncThunk('chatData/fetchChatMessages', async (studentId) => {
+    try {
+        const headers = {
+            Authorization: localStorage.getItem("teacherToken"),
+        };
+        const response = await fetchChatMessagesApi(studentId, headers)
+        return response.data;
+    } catch (err) {
+        message.error(err.response.data.message);
+        throw err;
+    }
+});
+
+// Fetch list of students who've messaged the teacher
+export const fetchChatList = createAsyncThunk('chatData/fetchChatList', async (id) => {
+    try {
+        const headers = {
+            Authorization: localStorage.getItem("teacherToken"),
+        };
+        const response = await fetchChatListApi(id, headers)
+        return response.data;
+    } catch (err) {
+        message.error(err.response.data.message);
+        throw err;
+    }
+});
+
+
+const chatSlice = createSlice({
+    name: 'teacherChatData',
+    initialState,
+    reducers: {
+        addMessageToChatList: (state, action) => {
+            const incomingMessage = action.payload;
+            const chatSessionIndex = state.chatList.findIndex(chat => chat.studentId === incomingMessage.senderId);
+            
+            if (chatSessionIndex > -1) {
+                const chatSession = state.chatList[chatSessionIndex];
+                chatSession.messages = chatSession.messages ? [...chatSession.messages, incomingMessage] : [incomingMessage];
+                
+                state.chatList.splice(chatSessionIndex, 1);  // remove the chatSession from its current position
+                state.chatList.unshift(chatSession);  // add it to the beginning
+            }
+        },
+        addYourMessageToChatList: (state, action) => {
+            const incomingMessage = action.payload;
+            const chatSessionIndex = state.chatList.findIndex(chat => chat.studentId === incomingMessage.recieverId);
+            
+            if (chatSessionIndex > -1) {
+                const chatSession = state.chatList[chatSessionIndex];
+                chatSession.messages = chatSession.messages ? [...chatSession.messages, incomingMessage] : [incomingMessage];
+                
+                state.chatList.splice(chatSessionIndex, 1);  // remove the chatSession from its current position
+                state.chatList.unshift(chatSession);  // add it to the beginning
+            }
+        },
+        addChatToChatList: (state, action) => {
+            const newChatSession = action.payload;
+            state.chatList.unshift(newChatSession);
+        }
+    }
+    ,
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchChatMessages.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(fetchChatMessages.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.chatMessages = action.payload;
+            })
+            .addCase(fetchChatMessages.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = 'Error fetching chat messages';
+            })
+
+            .addCase(fetchChatList.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(fetchChatList.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.chatList = action.payload;
+            })
+            .addCase(fetchChatList.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = 'Error fetching chat list';
+            })
+    },
+});
+
+export const { addMessageToChatList, addYourMessageToChatList, addChatToChatList } = chatSlice.actions;
+export default chatSlice.reducer;

@@ -5,8 +5,14 @@ import InstructorsSection from "./InstructorsSection";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCourses } from "../../../Redux/Features/Student/CoursesSlice";
-import { getClasses } from "../../../Redux/Features/Student/ClassSlice";
-import { checkIfStudentHasEnrolled } from "../../../Redux/Features/Student/EnrolledClassSlice";
+import {
+  getClasses,
+  resetClassState,
+} from "../../../Redux/Features/Student/ClassSlice";
+import {
+  checkIfStudentHasEnrolled,
+  resetEnrollmentState,
+} from "../../../Redux/Features/Student/EnrolledClassSlice";
 import SubjectView from "../Subjects/SubjectView";
 
 const StudentHome = () => {
@@ -24,24 +30,32 @@ const StudentHome = () => {
       .then((data) => {
         if (data.success) {
           setHasPaid(true);
+          dispatch(resetClassState());
         } else {
           dispatch(getClasses());
+          dispatch(resetEnrollmentState());
         }
       })
       .catch((error) => {
         console.error("Error checking enrollment:", error);
         // Handle error appropriately
       });
-  }, [dispatch, studentId]);
+  }, [dispatch, studentId, hasPaid]);
 
   return (
     <div className="mt-24 p-4">
       <div className="flex flex-col md:flex-row gap-8 mb-8">
         <div className="w-full md:w-1/2 bg-blue-100 rounded-xl p-4 max-w-full overflow-auto">
-          <BannerSection />
           <div className="mt-4 p-2 text-center">
-            <div className="text-2xl text-start font-semibold mb-4">
-              Welcome, {StudentData.fullName}!
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-2xl font-semibold">
+                Welcome, {StudentData.fullName}!
+              </div>
+              <img
+                src={StudentData?.studentImage?.url}
+                alt={`${StudentData.fullName}'s profile`}
+                className="rounded-full w-12 h-12 mr-4"
+              />
             </div>
             <hr className="border-t border-gray-400 w-full" />
           </div>
@@ -53,7 +67,7 @@ const StudentHome = () => {
             <>
               <p className="text-xl font-bold mb-3 p-2">Select Class</p>
               <ClassSection
-                studentData={StudentData}
+                studentData={StudentData._id}
                 classData={classes}
                 onPaymentSuccess={setHasPaid}
               />
@@ -66,6 +80,7 @@ const StudentHome = () => {
           <InstructorsSection />
         </div>
       </div>
+      <BannerSection />
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import AdminNavBar from "../../Components/Admin/Dashboard/AdminNavbar"
-import Body from "../../Components/Admin/Dashboard/Body"
+import Dashboard from "../../Components/Admin/Dashboard/Dashboard"
 
 const DashboardPage = () => {
   return (
     <div>
       <AdminNavBar/>
-      <Body/>
+      <Dashboard/>
     </div>
   )
 }

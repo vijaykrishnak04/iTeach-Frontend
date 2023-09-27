@@ -19,7 +19,7 @@ export const getClasses = createAsyncThunk('classData/getClasses', async () => {
         const response = await getClassesApi(headers);
         return response.data;
     } catch (err) {
-        message.error(err.response.data);
+        message.error(err.response.data.message);
         throw err;
     }
 });
@@ -32,7 +32,7 @@ export const getClassById = createAsyncThunk('classData/getClassById', async (cl
         const response = await getClassByIdApi(classId, headers);
         return response.data;
     } catch (err) {
-        message.error(err.response.data);
+        message.error(err.response.data.message);
         throw err;
     }
 });
@@ -40,10 +40,13 @@ export const getClassById = createAsyncThunk('classData/getClassById', async (cl
 const classSlice = createSlice({
     name: 'classData',
     initialState,
-    reducers: {},
+    reducers: {
+        resetClassState: (state) => {
+            return initialState;
+        }
+    },
     extraReducers: (builder) => {
         builder
-
             .addCase(getClasses.pending, (state) => {
                 state.isLoading = true;
             })
@@ -74,4 +77,6 @@ const classSlice = createSlice({
     },
 });
 
+export const { resetClassState } = classSlice.actions;
 export default classSlice.reducer;
+

@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, Dropdown } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faCalendarAlt,
-  faBookOpen,
   faPencilAlt,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
@@ -24,9 +23,33 @@ const TeacherNavBar = () => {
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("teacherToken");
+
+    // Decoding JWT to get the payload
+    const decodeToken = (token) => {
+      try {
+        return JSON.parse(atob(token.split(".")[1]));
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const payload = decodeToken(token);
+
+    // If token is not valid or expired, handle logout
+    if (!payload || payload.exp < Date.now() / 1000) {
+      handleLogout();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const teacherMenu = (
     <Menu>
-      <Menu.Item key="1" onClick={handleLogout}>
+       <Menu.Item key="1">
+          <Link to="/teacher/profile">Profile</Link>
+        </Menu.Item>
+      <Menu.Item key="2" onClick={handleLogout}>
         Sign Out
       </Menu.Item>
     </Menu>
@@ -38,7 +61,7 @@ const TeacherNavBar = () => {
 
   return (
     <>
-      <nav className="bg-white fixed w-full max-w-screen z-20 top-0 left-0 border-b border-gray-200 shadow-100 overflow-x-hidden">
+      <nav className="bg-white fixed w-full max-w-screen z-20 top-0 left-0 border-b border-gray-200 shadow-md overflow-x-hidden">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <Link to="/" className="flex items-center">
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />
@@ -104,19 +127,7 @@ const TeacherNavBar = () => {
                   <span>Home</span>
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/teacher/subject"
-                  className={`flex flex-col items-center justify-center py-2 px-1 ${
-                    location.pathname === "/teacher/subject"
-                      ? "text-orange-600"
-                      : "text-gray-900"
-                  } rounded hover:bg-gray-100 text-sm`}
-                >
-                  <FontAwesomeIcon icon={faBookOpen} />
-                  <span>Subjects</span>
-                </Link>
-              </li>
+
               <li>
                 <Link
                   to="/teacher/exams"
@@ -134,7 +145,7 @@ const TeacherNavBar = () => {
                 <Link
                   to="/teacher/chats"
                   className={`flex flex-col items-center justify-center py-2 px-1 ${
-                    location.pathname === "/student/chats"
+                    location.pathname === "/teacher/chats"
                       ? "text-orange-600"
                       : "text-gray-900"
                   } rounded hover:bg-gray-100 text-sm`}
@@ -152,7 +163,7 @@ const TeacherNavBar = () => {
                       : "text-gray-900"
                   } rounded hover:bg-gray-100 text-sm`}
                 >
-                   <FontAwesomeIcon icon={faCalendarAlt} />
+                  <FontAwesomeIcon icon={faCalendarAlt} />
                   <span>Schedules</span>
                 </Link>
               </li>

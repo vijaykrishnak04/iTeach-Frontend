@@ -1,6 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, Dropdown } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faChalkboardTeacher,
+  faSchool,
+  faBook,
+} from "@fortawesome/free-solid-svg-icons";
 
 const AdminNavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -15,6 +22,27 @@ const AdminNavBar = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+
+    // Decoding JWT to get the payload
+    const decodeToken = (token) => {
+      try {
+        return JSON.parse(atob(token.split(".")[1]));
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const payload = decodeToken(token);
+
+    // If token is not valid or expired, handle logout
+    if (!payload || payload.exp < Date.now() / 1000) {
+      handleLogout();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array to ensure it runs only once when the component mounts
 
   const userMenu = (
     <Menu>
@@ -37,7 +65,14 @@ const AdminNavBar = () => {
     setMenuOpen(!isMenuOpen);
   };
 
-  const currentPath = window.location.pathname;
+  const getLinkClasses = (path) => {
+    let baseClasses =
+      "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent";
+    if (location.pathname === path) {
+      baseClasses += " md:text-orange-400";
+    }
+    return baseClasses;
+  };
 
   return (
     <>
@@ -47,7 +82,7 @@ const AdminNavBar = () => {
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />
           </a>
           <div className="flex md:order-2">
-            <Dropdown menu={userMenu} placement="bottomRight" arrow>
+            <Dropdown overlay={userMenu} placement="bottomRight" arrow>
               <button
                 type="button"
                 className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
@@ -89,57 +124,46 @@ const AdminNavBar = () => {
           </div>
           <div
             className={`${
-              isMenuOpen ? "hidden" : "flex"
-            } items-center justify-between w-full md:w-auto md:order-1 transition-all duration-300`}
+              isMenuOpen ? "flex" : "hidden md:flex"
+            } w-full md:w-auto md:order-1 transition-all duration-300`}
             id="navbar-sticky"
           >
             <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white">
               <li>
-                <a
-                  href="/admin/dashBoard"
-                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
-                    currentPath === "/admin/dashBoard"
-                      ? "md:text-orange-400"
-                      : ""
-                  } md:p-0`}
-                  aria-current="page"
+                <Link
+                  to="/admin/dashboard"
+                  className={getLinkClasses("/admin/dashboard")}
                 >
-                  Home
-                </a>
+                  <FontAwesomeIcon icon={faHome} /> Home
+                </Link>
               </li>
               <li>
-                <a
-                  href="/admin/teachers"
-                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
-                    currentPath === "/admin/teachers"
-                      ? "md:text-orange-400"
-                      : ""
-                  } md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
+                <Link
+                  to="/admin/teachers"
+                  className={getLinkClasses("/admin/teachers")}
                 >
+                  <FontAwesomeIcon
+                    icon={faChalkboardTeacher}
+                    className="mr-2"
+                  />{" "}
                   Teacher
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/admin/class"
-                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
-                    currentPath === "/admin/class"
-                      ? "md:text-orange-400"
-                      : ""
-                  } md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
+                <Link
+                  to="/admin/class"
+                  className={getLinkClasses("/admin/class")}
                 >
-                  Class
-                </a>
+                  <FontAwesomeIcon icon={faSchool} /> Class
+                </Link>
               </li>
               <li>
-                <a
-                  href="/admin/courses"
-                  className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent ${
-                    currentPath === "/admin/courses" ? "md:text-orange-400" : ""
-                  } md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
+                <Link
+                  to="/admin/courses"
+                  className={getLinkClasses("/admin/courses")}
                 >
-                  Courses
-                </a>
+                  <FontAwesomeIcon icon={faBook} /> Courses
+                </Link>
               </li>
             </ul>
           </div>

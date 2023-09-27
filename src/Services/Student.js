@@ -37,3 +37,34 @@ export const getStudentByIdApi = (id, headers) => {
 export const editStudentApi = (studentId, studentData, headers) => {
     return axios.put(`/student/edit-student/${studentId}`, studentData, { headers });
 };
+
+export const getExamsByIdsApi = (examIds, headers) => {
+    const idsString = examIds.join(',');
+    return axios.get(`/student/get-exams?ids=${idsString}`, { headers });
+}
+
+export const validateExamApi = (examId, validationData, headers) => {
+    return axios.post(`/student/validate-exam/${examId}`, validationData, { headers });
+}
+
+
+// Chat related API calls
+
+export const getTeachersApi = (headers) => {
+    return axios.get('/student/get-teachers', { headers })
+}
+
+export const fetchChatListApi = (studentId, headers) => {
+    return axios.get(`/student/chat/${studentId}`, { headers });
+}
+
+export const fetchChatMessagesApi = (teacherId, headers) => {
+    return axios.get(`/student/chat/messages?teacherId=${teacherId}`, { headers });
+}
+
+//schedules
+
+export const getSchedulesApi = (scheduleIds, headers) => {
+    const idsString = scheduleIds.join(',');
+    return axios.get(`/student/get-schedules?ids=${idsString}`, { headers })
+}

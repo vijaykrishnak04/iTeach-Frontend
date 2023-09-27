@@ -1,3 +1,4 @@
+import { ExportOutlined } from '@ant-design/icons'
 import axios from '../../axios'
 
 export const adminLoginApi = (formData) => {
@@ -31,7 +32,6 @@ export const unblockTeacherApi = (id, headers) => {
 //course 
 
 export const addCourseApi = (formData, headers) => {
-    console.log(formData);
     return axios.post('/admin/add-course', formData, { headers })
 }
 
@@ -52,7 +52,7 @@ export const unHideCourseApi = (id, headers) => {
 }
 
 export const editCourseApi = (id, formData, headers) => {
-    return axios.put(`/admin/edit-course/${id}`,formData , { headers })
+    return axios.put(`/admin/edit-course/${id}`, formData, { headers })
 }
 
 //syllabus
@@ -81,4 +81,23 @@ export const unHideSyllabusApi = (id, headers) => {
     return axios.patch(`/admin/unhide-syllabus/${id}`, null, { headers });
 }
 
+//dashboard
+
+export const getDashboardDataApi = (headers) => {
+    return axios.get('/admin/get-dashboard-data', { headers })
+}
+
+//banner
+
+export const getBannersApi = (headers) => {
+    return axios.get('/admin/get-banners', { headers })
+}
+
+export const addBannerApi = (headers, banner) => {
+    return axios.post('/admin/add-banner', banner, { headers })
+}
+
+export const deleteBannerApi = (id, headers) => {
+    return axios.delete(`/admin/delete-banner/${id}`, { headers })
+}
 

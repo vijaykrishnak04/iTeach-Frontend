@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, Dropdown } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,22 +9,56 @@ import {
   faPencilAlt,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { resetClassState } from "../../../Redux/Features/Student/ClassSlice";
+import { resetCourseState } from "../../../Redux/Features/Student/CoursesSlice";
+import { resetEnrollmentState } from "../../../Redux/Features/Student/EnrolledClassSlice";
+import { StudentAuthReset } from "../../../Redux/Features/Student/AuthSlice";
+import { resetExamState } from "../../../Redux/Features/Student/ExamSlice";
 
 const StudentNavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch()
 
   const studentToken = localStorage?.getItem("studentToken");
 
   const handleLogout = () => {
     try {
       localStorage.removeItem("studentToken");
+      dispatch(resetClassState())
+      dispatch(resetCourseState())
+      dispatch(resetEnrollmentState())
+      dispatch(StudentAuthReset())
+      dispatch(resetExamState())
       navigate("/");
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("studentToken");
+
+    // Decoding JWT to get the payload
+    const decodeToken = (token) => {
+      try {
+        return JSON.parse(atob(token.split(".")[1]));
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const payload = decodeToken(token);
+
+    // If token is not valid or expired, handle logout
+    if (!payload || payload.exp < Date.now() / 1000) {
+      handleLogout();
+    }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, []); // Empty dependency array to ensure it runs only once when the component mounts
+
 
   const userMenu = (
     <Menu>
@@ -49,7 +83,7 @@ const StudentNavBar = () => {
 
   return (
     <>
-      <nav className="bg-white fixed w-full max-w-screen z-20 top-0 left-0 border-b border-gray-200 shadow-100 overflow-x-hidden">
+      <nav className="bg-white fixed w-full max-w-screen z-20 top-0 left-0 border-b border-gray-200 shadow-lg overflow-x-hidden ">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <Link to="/" className="flex items-center">
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />

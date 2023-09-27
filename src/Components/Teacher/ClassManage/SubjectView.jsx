@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getClassById } from "../../../Redux/Features/Teacher/classSlice"; // Adjust the path according to your directory structure
 import ChapterManage from "./ChapterManage";
 
 const SubjectView = () => {
-  const { id } = useParams(); // This is your classId
+  const { id } = useParams(); 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getClassById(id));
@@ -19,10 +20,36 @@ const SubjectView = () => {
     return <div className="mt-16">loading....</div>;
   }
 
+  const students = classData.students;
+  const handleStudentsList = () => {
+    navigate("/teacher/class/students", { state: { students } });
+  };
+
+  const handleStartLiveClass = () => {
+    // Navigate to LiveClass component and pass the classId as state or param
+    navigate(`/teacher/live-class/${id}`);
+  };
+
   return (
     <>
       <div className="p-4 mt-24 mx-5 bg-blue-100 rounded-xl">
-        <h1 className="text-xl font-bold mb-4">{classData.name}</h1>
+        <div className="flex justify-between items-center mb-5">
+          <h1 className="text-xl font-bold mb-4">{classData.name}</h1>
+          <div>
+            <button
+              onClick={handleStudentsList}
+              className="ml-4 p-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Students List
+            </button>
+            <button
+              onClick={handleStartLiveClass}
+              className="ml-4 p-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Start Live Class
+            </button>
+          </div>
+        </div>
         <div className="subjects mx-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {classData.subjects.map((subject) => (
             <div

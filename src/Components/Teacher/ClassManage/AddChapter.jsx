@@ -100,86 +100,84 @@ const AddChapter = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full p-4 mt-20"
+      className="mx-5 mt-24 p-6 bg-gray-300 shadow-md rounded-md"
       encType="multipart/form-data"
     >
-      <h2 className="text-2xl text-start font-semibold mb-5">
-        Add a New Chapter for {subject?.subjectName}
-      </h2>
-
-      <div className="flex justify-between items-center mb-5">
-        <div className="w-1/3">
-          <label className="block mb-2 text-sm font-medium text-gray-600">
-            Chapter Title:
-          </label>
-          <input
-            type="text"
-            className="p-2 border rounded w-full"
-            value={chapterTitle}
-            onChange={(e) => setChapterTitle(e.target.value)}
-            placeholder="Enter chapter title..."
-          />
-          {errors.chapterTitle && (
-            <p className="text-red-500">{errors.chapterTitle}</p>
-          )}
-        </div>
-
+      <div className="flex justify-between mb-3">
+        <h2 className="text-xl font-semibold">
+          Add a New Chapter for {subject?.subjectName}
+        </h2>
         <button
           type="submit"
-          className="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-500"
+          className="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-800 transition duration-300"
         >
           Submit Chapter
         </button>
       </div>
 
-      <div className="bg-gray-300 p-6 shadow-md rounded-md">
-        <div className="flex justify-between items-center mb-5">
-          <h3 className="text-lg font-semibold">Manage Lessons</h3>
-
-          <button
-            type="button"
-            className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-800"
-            onClick={() => setIsModalOpen(true)}
-          >
-            Add Lessons
-          </button>
+      <div className="flex flex-col p-6 bg-white shadow-md rounded-md hover:shadow-lg transition-shadow duration-300">
+        <div className="flex flex-wrap justify-between mb-6">
+          <div className="w-full md:w-1/3 p-4">
+            <label className="block mb-2 text-sm font-medium text-gray-600">
+              Chapter Title:
+            </label>
+            <input
+              type="text"
+              className="p-2 border rounded w-full transition-border duration-300 hover:border-blue-500"
+              value={chapterTitle}
+              onChange={(e) => setChapterTitle(e.target.value)}
+              placeholder="Enter chapter title..."
+            />
+            {errors.chapterTitle && (
+              <p className="text-red-500">{errors.chapterTitle}</p>
+            )}
+          </div>
         </div>
 
-        {errors.lessons && <p className="text-red-500">{errors.lessons}</p>}
-
-        <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
-          {lessons.map((lesson, index) => (
-            <div
-              key={index}
-              className="bg-white p-4 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105"
+        <div className="w-full mt-3">
+          <div className="flex justify-center mt-6 mb-3">
+            <button
+              type="button"
+              className="bg-blue-600 text-white px-5 py-2 rounded transition-transform duration-300 transform hover:scale-105 hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-800"
+              onClick={() => setIsModalOpen(true)}
             >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold">{lesson.lessonTitle}</h3>
-                <div className="space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => editLesson(index)}
-                    className="text-sm bg-blue-600 text-white py-1 px-2 rounded-md hover:bg-blue-500"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => removeLesson(index)}
-                    className="text-sm bg-red-600 text-white py-1 px-2 rounded-md hover:bg-red-500"
-                  >
-                    Remove
-                  </button>
+              Add Lessons
+            </button>
+          </div>
+          {errors.lessons && <p className="text-red-500">{errors.lessons}</p>}
+          <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+            {lessons.map((lesson, index) => (
+              <div
+                key={index}
+                className="bg-white p-4 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-lg font-semibold">
+                    {lesson.lessonTitle}
+                  </h3>
+                  <div className="space-x-2">
+                    <button
+                      onClick={() => editLesson(index)}
+                      className="text-sm bg-blue-600 text-white py-1 px-2 rounded-md hover:bg-blue-500 transition-colors duration-300"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => removeLesson(index)}
+                      className="text-sm bg-red-600 text-white py-1 px-2 rounded-md hover:bg-red-500 transition-colors duration-300"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
+                <p className="text-gray-600 text-sm">
+                  {lesson.lessonDescription}
+                </p>
               </div>
-              <p className="text-gray-600 text-sm">
-                {lesson.lessonDescription}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* Submit Chapter Button outside of rounded div */}
 
       <AddLessonModal
         isOpen={isModalOpen}

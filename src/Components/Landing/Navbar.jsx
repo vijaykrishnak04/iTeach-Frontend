@@ -1,36 +1,41 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { Modal } from "antd";
+import { Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faInfoCircle,
+  faCog,
+  faEnvelope,
+} from "@fortawesome/free-solid-svg-icons";
 
 const NavBar = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const modalRef = useRef();
+
+  const location = useLocation();
 
   const handleGetStartedClick = () => {
     setModalOpen(true);
   };
 
- 
   const handleModalClose = () => {
     setModalOpen(false);
-  };
-
-  const handleModalClickOutside = (event) => {
-    if (modalRef.current === event.target) {
-      handleModalClose();
-    }
   };
 
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
     <>
       <nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200 shadow-100">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <a href="#" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />
-          </a>
+          </Link>
           <div className="flex md:order-2">
             <button
               type="button"
@@ -44,24 +49,7 @@ const NavBar = () => {
               className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
               onClick={toggleMenu}
             >
-              <span className="sr-only">Open main menu</span>
-              <svg
-                className={`w-5 h-5 transition-transform ${
-                  isMenuOpen ? "rotate-90" : "rotate-0"
-                }`}
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 17 14"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 1h15M1 7h15M1 13h15"
-                />
-              </svg>
+              {/* ...Your menu SVG code here */}
             </button>
           </div>
           <div
@@ -72,37 +60,53 @@ const NavBar = () => {
           >
             <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white">
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-orange-400"
+                <Link
+                  to="/"
+                  className={`block py-2 pl-3 pr-4 rounded md:p-0 ${
+                    isActive("/")
+                      ? "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-orange-400"
+                      : "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-orange-400 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  }`}
                   aria-current="page"
                 >
-                  Home
-                </a>
+                  <FontAwesomeIcon icon={faHome} className="mr-2" /> Home
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <Link
+                  to="/about"
+                  className={`block py-2 pl-3 pr-4 rounded md:p-0 ${
+                    isActive("/about")
+                      ? "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-orange-400"
+                      : "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-orange-400 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  }`}
                 >
-                  About
-                </a>
+                  <FontAwesomeIcon icon={faInfoCircle} className="mr-2" /> About
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <Link
+                  to="/services"
+                  className={`block py-2 pl-3 pr-4 rounded md:p-0 ${
+                    isActive("/services")
+                      ? "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-orange-400"
+                      : "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-orange-400 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  }`}
                 >
-                  Services
-                </a>
+                  <FontAwesomeIcon icon={faCog} className="mr-2" /> Services
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-blue-500 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <Link
+                  to="/contact"
+                  className={`block py-2 pl-3 pr-4 rounded md:p-0 ${
+                    isActive("/contact")
+                      ? "block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-orange-400"
+                      : "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 md:dark:hover:text-orange-400 dark:text-slate-950 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  }`}
                 >
-                  Contact
-                </a>
+                  <FontAwesomeIcon icon={faEnvelope} className="mr-2" /> Contact
+                </Link>
               </li>
             </ul>
           </div>
@@ -110,43 +114,27 @@ const NavBar = () => {
       </nav>
 
       {/* Modal */}
-      {isModalOpen && (
-        <div
-          ref={modalRef}
-          className="fixed inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center transition-opacity duration-300 ease-in-out"
-          onClick={handleModalClickOutside}
-          style={{ opacity: isModalOpen ? 1 : 0 }}
-        >
-          <div
-            className="bg-white p-4 rounded-lg transform transition-all duration-300 ease-in-out"
-            style={{
-              transform: isModalOpen ? "scale(1)" : "scale(0.9)",
-              opacity: isModalOpen ? 1 : 0,
-            }}
-          >
-            <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors duration-200"
-              onClick={handleModalClose}
-            >
-              Close
+      <Modal
+        title="Get Started"
+        open={isModalOpen}
+        onCancel={handleModalClose}
+        footer={null} // to remove default buttons
+        className="rounded-xl" // Added to round the corners of the modal
+      >
+        <div className="flex flex-col space-y-4 items-center justify-center py-6">
+          <Link to="/teacher-login" className="w-1/2">
+            <button className="w-full bg-orange-500 hover:bg-orange-700 active:bg-orange-900 focus:ring focus:ring-orange-200 rounded-lg text-white text-lg font-semibold px-4 py-2">
+              Login as Teacher
             </button>
-            <div className="flex flex-col items-center space-y-4 p-6">
-              <a
-                href="/teacher-login"
-                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
-              >
-                Login as Teacher
-              </a>
-              <a
-                href="/login"
-                className="text-white bg-orange-400 hover:bg-orange-800 shadow-slate-400 shadow-md font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
-              >
-                Login as Student
-              </a>
-            </div>
-          </div>
+          </Link>
+
+          <Link to="/login" className="w-1/2">
+            <button className="w-full bg-orange-500 hover:bg-orange-700 active:bg-orange-900 focus:ring focus:ring-orange-200 rounded-lg text-white text-lg font-semibold px-4 py-2">
+              Login as Student
+            </button>
+          </Link>
         </div>
-      )}
+      </Modal>
     </>
   );
 };

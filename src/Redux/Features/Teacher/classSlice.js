@@ -19,7 +19,7 @@ export const getClasses = createAsyncThunk('classData/getClasses', async () => {
     const response = await getClassesApi(headers);
     return response.data;
   } catch (err) {
-    message.error(err.response.data);
+    message.error(err.response.data.message);
     throw err;
   }
 });
@@ -32,7 +32,7 @@ export const getClassById = createAsyncThunk('classData/getClassById', async (id
     const response = await getClassByIdApi(headers, id);
     return response.data;
   } catch (err) {
-    message.error(err.response.data);
+    message.error(err.response.data.message);
     throw err;
   }
 });
@@ -48,7 +48,7 @@ export const addChapter = createAsyncThunk('classData/deleteClass', async (formD
     const response = await addChapterApi(formData, headers);
     return response.data;
   } catch (err) {
-    message.error(err.response.data);
+    message.error(err.response.data.message);
     throw err;
   }
 });
@@ -61,7 +61,7 @@ export const editChapter = createAsyncThunk('classData/editClass', async (formDa
     const response = await editChapterApi(formData, headers);
     return response.data;
   } catch (err) {
-    message.error(err.response.data);
+    message.error(err.response.data.message);
     throw err;
   }
 });

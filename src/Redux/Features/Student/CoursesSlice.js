@@ -19,7 +19,7 @@ export const getCourses = createAsyncThunk('courseData/getCourses', async () => 
         const response = await getCoursesApi(headers);
         return response.data;
     } catch (err) {
-        message.error(err.response.data);
+        message.error(err.response.data.message);
         throw err;
     }
 });
@@ -32,7 +32,7 @@ export const getCourseById = createAsyncThunk('courseData/getCourseById', async 
         const response = await getCourseByIdApi(courseId, headers);
         return response.data;
     } catch (err) {
-        message.error(err.response.data);
+        message.error(err.response.data.message);
         throw err;
     }
 });
@@ -40,10 +40,13 @@ export const getCourseById = createAsyncThunk('courseData/getCourseById', async 
 const courseSlice = createSlice({
     name: 'courseData',
     initialState,
-    reducers: {},
+    reducers: {
+        resetCourseState: (state) => {
+            return initialState;
+        }
+    },
     extraReducers: (builder) => {
         builder
-
             .addCase(getCourses.pending, (state) => {
                 state.isLoading = true;
             })
@@ -74,5 +77,6 @@ const courseSlice = createSlice({
     },
 });
 
-
+export const { resetCourseState } = courseSlice.actions;
 export default courseSlice.reducer;
+

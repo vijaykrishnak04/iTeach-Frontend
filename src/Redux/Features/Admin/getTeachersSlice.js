@@ -9,7 +9,13 @@ const initialState = {
   message: '',
 };
 
-export const addTeacher = createAsyncThunk('teacherData/addTeacher', async ( teacher ) => {
+const handleApiError = (err) => {
+  console.log(err);
+  message.error(err.response?.data?.message || 'Unexpected error');
+  throw err;
+};
+
+export const addTeacher = createAsyncThunk('teacherData/addTeacher', async (teacher) => {
   try {
     const headers = {
       Authorization: localStorage.getItem("adminToken"),
@@ -17,43 +23,58 @@ export const addTeacher = createAsyncThunk('teacherData/addTeacher', async ( tea
     const response = await addTeacherApi(teacher, headers);
     return response.data;
   } catch (err) {
-    console.log(err);
-    message.error("An unexpected error occurred");
-    throw err;
+    handleApiError(err);
   }
 });
 
 
+
 export const getTeachers = createAsyncThunk('teacherData/getTeachers', async () => {
-  const headers = {
-    Authorization: localStorage.getItem("adminToken"),
-  };
-  const response = await getTeachersApi(headers);
-  return response.data;
+  try {
+    const headers = {
+      Authorization: localStorage.getItem("adminToken"),
+    };
+    const response = await getTeachersApi(headers);
+    return response.data;
+  } catch (err) {
+    handleApiError(err);
+  }
 });
 
 export const blockTeacher = createAsyncThunk('teacherData/blockTeacher', async (teacherId) => {
-  const headers = {
-    Authorization: localStorage.getItem("adminToken"),
-  };
-  const response = await blockTeacherApi(teacherId, headers);
-  return response.data;
+  try {
+    const headers = {
+      Authorization: localStorage.getItem("adminToken"),
+    };
+    const response = await blockTeacherApi(teacherId, headers);
+    return response.data;
+  } catch (err) {
+    handleApiError(err);
+  }
 });
 
 export const unblockTeacher = createAsyncThunk('teacherData/unblockTeacher', async (teacherId) => {
-  const headers = {
-    Authorization: localStorage.getItem("adminToken"),
-  };
-  const response = await unblockTeacherApi(teacherId, headers);
-  return response.data;
+  try {
+    const headers = {
+      Authorization: localStorage.getItem("adminToken"),
+    };
+    const response = await unblockTeacherApi(teacherId, headers);
+    return response.data;
+  } catch (err) {
+    handleApiError(err);
+  }
 });
 
 export const deleteTeacher = createAsyncThunk('teacherData/deleteTeacher', async (teacherId) => {
-  const headers = {
-    Authorization: localStorage.getItem("adminToken"),
-  };
-  const response = await deleteTeacherApi(teacherId, headers);
-  return response.data;
+  try {
+    const headers = {
+      Authorization: localStorage.getItem("adminToken"),
+    };
+    const response = await deleteTeacherApi(teacherId, headers);
+    return response.data;
+  } catch (err) {
+    handleApiError(err);
+  }
 });
 
 const teacherSlice = createSlice({

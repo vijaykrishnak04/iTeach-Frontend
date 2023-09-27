@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,11 +10,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Modal, message } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { getStudentById } from "../../../Redux/Features/Student/AuthSlice";
-import { editStudentApi } from "../../../Services/Student";
+import {
+  editStudent,
+  getStudentById,
+} from "../../../Redux/Features/Student/AuthSlice";
+import ClassSection from "../Home/ClassSection";
+import ExamResult from "./ExamResult";
 
 const StudentProfile = () => {
   const studentData = useSelector((state) => state.studentData.studentData);
+  const classes = useSelector((state) => state.classData.classList);
 
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
@@ -46,12 +51,14 @@ const StudentProfile = () => {
       ...student,
       name: studentData.fullName,
       email: studentData.email,
+      photo: studentData?.studentImage?.url,
       phoneNumber: studentData.phoneNumber,
       classRef: studentData.classRef,
       gender: studentData.gender,
       dateOfBirth: formattedDate,
       address: studentData.address,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentData]);
 
   const studentId = studentData._id;
@@ -64,10 +71,6 @@ const StudentProfile = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const headers = {
-      Authorization: localStorage.getItem("studentToken"),
-    };
-
     Modal.confirm({
       title: "Are you sure you want to update the details?",
       icon: <ExclamationCircleOutlined />,
@@ -75,51 +78,117 @@ const StudentProfile = () => {
         "Confirming will update the student details with the provided data.",
       async onOk() {
         try {
-          const response = await editStudentApi(studentId, student, headers);
-          if (response.status === 200) {
+          // Dispatch the editStudent asyncThunk
+          const actionResult = await dispatch(
+            editStudent({ studentId, studentData: student })
+          );
+
+          // Check if the action was fulfilled
+          if (editStudent.fulfilled.match(actionResult)) {
             setEditing(false);
-            dispatch(getStudentById(studentId)); // To refresh the data on UI
             message.success("Details updated successfully!");
           } else {
-            message.error("Error updating details. Please try again.");
+            message.error(
+              actionResult.payload ||
+                "Error updating details. Please try again."
+            );
           }
         } catch (error) {
           console.error("Error updating student details:", error);
+          message.error("Error updating details. Please try again.");
         }
       },
       onCancel() {
         // Optional: Handle any action if the user cancels
-        console.log("User cancelled the update");
+        return;
       },
     });
   };
 
+  const fileInput = useRef(null);
+
+  const handleImageChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+
+      formData.append("photo", file);
+
+      try {
+        const headers = {
+          Authorization: localStorage.getItem("studentToken"),
+          // Since we're using FormData, you might not need to explicitly set the Content-Type header
+          // but I'll leave it here in case you need it.
+          "Content-Type": "multipart/form-data",
+        };
+
+        // Dispatch the editStudent asyncThunk
+        // Assuming studentId and student are accessible in the scope
+        await dispatch(
+          editStudent({
+            studentId,
+            studentData: formData,
+            headers,
+          })
+        );
+
+        // If you need any post-success actions like updating local state or UI, add them here
+        message.success("Photo uploaded successfully!");
+      } catch (error) {
+        console.error("Error uploading photo:", error);
+        message.error("Error uploading photo. Please try again.");
+      }
+    }
+  };
+
   return (
-    <div className="p-4 md:p-8 mt-20 flex sm:flex-row flex-col">
+    <div className="p-4 md:p-8 mt-20 flex sm:flex-row flex-col items-start">
       {/* First Column - Profile picture and selecting class */}
       <div className="md:w-1/2 md:mr-8 mb-8 md:mb-0">
         <div className="text-center">
+          <input
+            type="file"
+            accept=".jpeg, .jpg, .png"
+            onChange={handleImageChange}
+            className="hidden"
+            ref={fileInput}
+          />
           {student.photo ? (
-            <img
-              src={student.photo}
-              alt="Student"
-              className="mx-auto rounded-full w-32 h-32"
-            />
+            <div className="relative">
+              <img
+                src={student.photo}
+                alt="Student"
+                className="mx-auto rounded-full w-32 h-32"
+              />
+              <button
+                onClick={() => fileInput.current.click()}
+                className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-md p-1"
+              >
+                Change
+              </button>
+            </div>
           ) : (
             <div className="mx-auto w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-              <FontAwesomeIcon icon={faCamera} className="text-gray-500" />
+              <button
+                onClick={() => fileInput.current.click()}
+                className="text-center"
+              >
+                <FontAwesomeIcon icon={faCamera} className="text-gray-500" />
+                <span className="block text-gray-500">Add Photo</span>
+              </button>
             </div>
           )}
+
           <h2 className="mt-4 text-xl">{student.name}</h2>
 
-          <div className="mt-4 flex justify-center items-center">
-            <select className="mr-2 p-2">
-              <option value="class1">Class 1</option>
-              <option value="class2">Class 2</option>
-            </select>
-            <button className="p-2 bg-red-600 text-white rounded">
+          <div className="mt-4 flex flex-col">
+            <p className="text-xl text-start font-bold mb-3 p-2">
               Change Class
-            </button>
+            </p>
+            <ClassSection studentData={studentId} classData={classes} />
+          </div>
+          <div className="mt-4 flex flex-col items-start p-4 bg-gray-100 rounded-md shadow-lg overflow-y-auto max-h-[calc(100vh-2rem)]">
+            <ExamResult exam={studentData.exam} />
           </div>
         </div>
       </div>

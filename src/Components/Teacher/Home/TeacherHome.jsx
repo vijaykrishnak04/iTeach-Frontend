@@ -15,7 +15,7 @@ const TeacherHome = () => {
   }, [dispatch]);
 
   return (
-    <div className="mt-8">
+    <div className="mt-10">
       <SchedulesSection />
       <ClassesSection classes={classesData} /> {/* Pass the classes data to the ClassesSection component */}
     </div>

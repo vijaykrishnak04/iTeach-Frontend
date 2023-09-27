@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { teacherLoginApi } from "../../../Services/Teacher";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { teacherLogin } from "../../../Redux/Features/Teacher/TeacherProfileSlice";
 
 const TeacherLogin = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +16,7 @@ const TeacherLogin = () => {
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const validateEmail = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -47,21 +50,27 @@ const TeacherLogin = () => {
       password: password,
     };
 
-    teacherLoginApi(formData)
-      .then((responce) => {
-        if (responce.data.success) {
-          const jwtToken = responce.data.token;
-
+    // Dispatching the teacherLogin async thunk
+    dispatch(teacherLogin(formData))
+      .then((responseAction) => {
+        if (teacherLogin.fulfilled.match(responseAction)) {
+          const jwtToken = responseAction.payload.token;
           localStorage.setItem("teacherToken", jwtToken);
           navigate("/teacher/home");
-        } else {
-          setPasswordError(responce.data.errors);
+        } else if (teacherLogin.rejected.match(responseAction)) {
+          if (
+            responseAction.payload?.message ===
+            "The user with the email does not exist"
+          ) {
+            setEmailError(responseAction.payload?.message);
+          } else {
+            setPasswordError(responseAction.payload?.message);
+          }
         }
       })
       .catch((error) => {
-        setPasswordError(
-          error.response ? error.response.data.message : "An error occurred."
-        );
+        console.log(error);
+        setPasswordError(error.message ? error.message : "An error occurred.");
       });
   };
 

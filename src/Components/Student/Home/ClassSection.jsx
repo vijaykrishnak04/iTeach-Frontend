@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Modal, Button, message } from "antd";
 import { createOrderApi, verifyPaymentApi } from "../../../Services/Student";
 
-const ClassSection = ({ studentData, classData,  onPaymentSuccess }) => {
+const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
   const handleClassClick = (classItem) => {
@@ -48,25 +48,31 @@ const ClassSection = ({ studentData, classData,  onPaymentSuccess }) => {
       const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
         response;
 
-        const headers = {
-          Authorization: localStorage.getItem("studentToken"),
+      const headers = {
+        Authorization: localStorage.getItem("studentToken"),
       };
-      const verificationResponse = await verifyPaymentApi({
-        paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id,
-        signature: razorpay_signature,
-        classId: selectedClass?._id,
-        studentId: studentData._id
-      }, headers);
+      const verificationResponse = await verifyPaymentApi(
+        {
+          paymentId: razorpay_payment_id,
+          orderId: razorpay_order_id,
+          signature: razorpay_signature,
+          classId: selectedClass?._id,
+          studentId: studentData,
+        },
+        headers
+      );
 
       const data = verificationResponse.data;
       if (data.success) {
         message.success("Payment successful!");
-        onPaymentSuccess(true)
+        if (onPaymentSuccess) {
+          onPaymentSuccess(true);
+        }
       } else {
         message.error("Payment verification failed. Please contact support.");
       }
     } catch (error) {
+      console.log(error);
       message.error("Error verifying payment. Please contact support.");
     }
   };
@@ -87,7 +93,7 @@ const ClassSection = ({ studentData, classData,  onPaymentSuccess }) => {
 
       <Modal
         title={<div className="text-center">{selectedClass?.name}</div>}
-        visible={isModalOpen}
+        open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         width="fit-content"
         centered={true} // To ensure the modal is vertically centered.
