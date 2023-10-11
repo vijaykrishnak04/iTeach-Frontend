@@ -1,4 +1,4 @@
-import ManageSchedules from "../../Components/Teacher/Schedules/manageSchedules";
+import ManageSchedules from "../../Components/Teacher/Schedules/ManageSchedules";
 import TeacherNavBar from "../../Components/Teacher/Home/TeacherNavbar";
 
 const SchedulesPage = () => {
