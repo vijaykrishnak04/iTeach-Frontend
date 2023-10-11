@@ -1,5 +1,5 @@
 import StudentNavBar from "../../Components/Student/Home/StudentNavbar";
-import StudentProfile from "../../Components/Student/Profile/studentProfile.jsx";
+import StudentProfile from "../../Components/Student/Profile/StudentProfile";
 
 const StudentProfilePage = () => {
   return (
