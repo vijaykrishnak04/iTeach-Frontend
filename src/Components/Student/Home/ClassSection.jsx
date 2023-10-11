@@ -14,6 +14,7 @@ const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
 
   const initiatePayment = async () => {
     try {
+      setIsModalOpen(false)
       const amount = selectedClass?.price * 100; // Convert amount to smallest unit for Razorpay
 
       const headers = {
@@ -23,7 +24,7 @@ const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
       const data = response.data;
 
       const options = {
-        key: "rzp_test_QlgFt3EDVpYyIC",
+        key: `${import.meta.env.VITE_REACT_APP_RAZORPAY_KEY}`,
         amount,
         currency: "INR",
         name: "I teach",
@@ -78,25 +79,24 @@ const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
   };
 
   return (
-    <div className="p-5 rounded-xl bg-gray-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="p-5 rounded-xl bg-gray-100 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       {classData.map((classItem, index) => (
         <div
           key={index}
-          className="p-5 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+          className="p-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
           onClick={() => handleClassClick(classItem)}
         >
-          <p className="text-lg text-center font-bold text-blue-600">
+          <p className="text-lg text-center font-bold text-black">
             {classItem.name}
           </p>
         </div>
       ))}
-
       <Modal
         title={<div className="text-center">{selectedClass?.name}</div>}
-        open={isModalOpen}
+        visible={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        width="fit-content"
-        centered={true} // To ensure the modal is vertically centered.
+        width={600} // Consider specifying a width in pixels, especially for desktop views
+        centered={true}
         footer={[
           <Button key="back" onClick={() => setIsModalOpen(false)}>
             Cancel
@@ -111,14 +111,39 @@ const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
           </Button>,
         ]}
       >
-        <ul className="mb-4">
-          {selectedClass?.subjects.map((subject, index) => (
-            <li key={index} className="text-blue-400 mb-2">
-              {subject.subjectName}
-            </li>
-          ))}
-        </ul>
-        <p className="mb-4 font-bold">Price: ${selectedClass?.price}</p>
+        {/* Display Thumbnail */}
+        {selectedClass?.thumbnail?.url && (
+          <div className="flex justify-center my-2">
+            <img
+              src={selectedClass.thumbnail.url}
+              alt={`${selectedClass?.name} Thumbnail`}
+              className="max-w-full h-auto" // These classes will make sure the image fits the container
+              style={{ maxHeight: "200px" }} // Limit the height
+            />
+          </div>
+        )}
+
+        {/* Display Description */}
+        {selectedClass?.description && (
+          <p className="mb-4">{selectedClass.description}</p>
+        )}
+
+        {/* Display Price */}
+        <p className="mb-4 font-bold">Price: ₹{selectedClass?.price}</p>
+
+        {/* Display Subjects under a heading */}
+        <div className="mb-4">
+          <h3 className="text-lg font-bold mb-2">Subjects Included:</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {" "}
+            {/* Three subjects in a row */}
+            {selectedClass?.subjects.map((subject, index) => (
+              <div key={index} className="bg-blue-100 p-2 rounded text-center">
+                {subject.subjectName}
+              </div>
+            ))}
+          </div>
+        </div>
       </Modal>
     </div>
   );

@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { teacherLoginApi } from "../../../Services/Teacher";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { teacherLogin } from "../../../Redux/Features/Teacher/TeacherProfileSlice";
 
 const TeacherLogin = () => {
@@ -27,23 +26,11 @@ const TeacherLogin = () => {
     }
   };
 
-  const validatePassword = () => {
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    if (!passwordPattern.test(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters long and contain at least one letter and one number"
-      );
-    } else {
-      setPasswordError("");
-    }
-  };
-
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
     validateEmail();
-    validatePassword();
 
     const formData = {
       email: email,

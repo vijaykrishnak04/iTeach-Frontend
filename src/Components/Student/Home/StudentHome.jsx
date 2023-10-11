@@ -1,10 +1,8 @@
 import CourseSection from "../Course/CourseSection";
 import ClassSection from "./ClassSection";
-import BannerSection from "./BannerSection";
-import InstructorsSection from "./InstructorsSection";
+import TodaySchedules from "./TodaySchedules";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCourses } from "../../../Redux/Features/Student/CoursesSlice";
 import {
   getClasses,
   resetClassState,
@@ -18,13 +16,11 @@ import SubjectView from "../Subjects/SubjectView";
 const StudentHome = () => {
   const classes = useSelector((state) => state.classData.classList);
   const StudentData = useSelector((state) => state.studentData.studentData);
-  const [hasPaid, setHasPaid] = useState(false);
+  const [hasPaid, setHasPaid] = useState(true);
   const studentId = StudentData._id;
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getCourses());
-
     dispatch(checkIfStudentHasEnrolled(studentId))
       .unwrap()
       .then((data) => {
@@ -32,6 +28,7 @@ const StudentHome = () => {
           setHasPaid(true);
           dispatch(resetClassState());
         } else {
+          setHasPaid(false);
           dispatch(getClasses());
           dispatch(resetEnrollmentState());
         }
@@ -44,21 +41,8 @@ const StudentHome = () => {
 
   return (
     <div className="mt-24 p-4">
-      <div className="flex flex-col md:flex-row gap-8 mb-8">
+      <div className="flex flex-col md:flex-row gap-8 mb-8 items-start">
         <div className="w-full md:w-1/2 bg-blue-100 rounded-xl p-4 max-w-full overflow-auto">
-          <div className="mt-4 p-2 text-center">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-2xl font-semibold">
-                Welcome, {StudentData.fullName}!
-              </div>
-              <img
-                src={StudentData?.studentImage?.url}
-                alt={`${StudentData.fullName}'s profile`}
-                className="rounded-full w-12 h-12 mr-4"
-              />
-            </div>
-            <hr className="border-t border-gray-400 w-full" />
-          </div>
           {hasPaid ? (
             <div className="overflow-y-auto">
               <SubjectView />
@@ -74,13 +58,15 @@ const StudentHome = () => {
             </>
           )}
         </div>
-
-        <div className="w-full md:w-1/2 bg-green-100 rounded-xl p-4 max-w-full">
-          <CourseSection />
-          <InstructorsSection />
+        <div className="w-full md:w-1/2 rounded-xl max-w-full">
+          <div className=" bg-green-100 rounded-xl p-4 mb-2">
+            <TodaySchedules />
+          </div>
+          <div className=" bg-green-100 rounded-xl p-4 ">
+            <CourseSection />
+          </div>
         </div>
       </div>
-      <BannerSection />
     </div>
   );
 };

@@ -76,7 +76,7 @@ const AdminNavBar = () => {
 
   return (
     <>
-      <nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200 shadow-100">
+      <nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200 shadow-md">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="#" className="flex items-center">
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />

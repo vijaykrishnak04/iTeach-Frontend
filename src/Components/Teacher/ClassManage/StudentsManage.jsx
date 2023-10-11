@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { getStudentByIdsApi } from "../../../Services/Teacher";
-import { Modal, Button } from "antd";
+import {
+  blockStudent,
+  getStudentByIdsApi,
+  unblockStudent,
+} from "../../../Services/Teacher";
+import { Modal, Button, message } from "antd";
 import ExamResult from "../../Student/Profile/ExamResult";
 
 const StudentsManage = () => {
@@ -33,14 +37,69 @@ const StudentsManage = () => {
     setIsModalOpen(true);
   };
 
-  const filteredStudents = studentsData.filter((student) =>
-    [student.fullName, student.email, student.phoneNumber.toString()].some(
-      (data) => data.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  const filteredStudents = studentsData.filter((student) => {
+    // Convert isBlocked to a string representation
+    const isBlockedString = student.isBlocked ? "blocked" : "active";
 
-  const handleBlock = () => {
-    // Handle the block logic here
+    // Combine all searchable fields
+    const searchableFields = [
+      student.fullName,
+      student.email,
+      student.phoneNumber.toString(),
+      isBlockedString,
+    ];
+
+    // Perform the search
+    return searchableFields.some((data) =>
+      data.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const handleBlock = (studentId) => {
+    blockStudent(studentId, headers)
+      .then((response) => {
+        if (response.status === 200) {
+          // Update the state of students data
+          setStudentsData((previousData) => {
+            return previousData.map((student) => {
+              if (student._id === studentId) {
+                return { ...student, isBlocked: true };
+              }
+              return student;
+            });
+          });
+          if (selectedStudent && selectedStudent._id === studentId) {
+            setSelectedStudent({ ...selectedStudent, isBlocked: true });
+          }
+          message.success(response.data.message);
+        }
+      })
+      .catch((response) => {
+        message.error(response.response.data);
+      });
+  };
+
+  const handleUnblock = (studentId) => {
+    unblockStudent(studentId, headers)
+      .then((response) => {
+        if (response.status === 200) {
+          setStudentsData((previousData) => {
+            return previousData.map((student) => {
+              if (student._id === studentId) {
+                return { ...student, isBlocked: false };
+              }
+              return student;
+            });
+          });
+          if (selectedStudent && selectedStudent._id === studentId) {
+            setSelectedStudent({ ...selectedStudent, isBlocked: false });
+          }
+          message.success(response.data.message);
+        }
+      })
+      .catch((response) => {
+        message.error(response.response.data);
+      });
   };
 
   const handleRemove = () => {
@@ -50,7 +109,6 @@ const StudentsManage = () => {
   return (
     <div className="mt-10 p-10">
       <p className="text-lg font-bold mt-5 mb-3">Student Management</p>
-
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <div className="p-4">
           <input
@@ -74,7 +132,13 @@ const StudentsManage = () => {
                 Phone number
               </th>
               <th scope="col" className="px-6 py-3">
+                Joined Date
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Actions
+              </th>
+              <th scope="col" className="px-6 py-3">
+                isBlocked
               </th>
             </tr>
           </thead>
@@ -93,10 +157,22 @@ const StudentsManage = () => {
                 </th>
                 <td className="px-6 py-4">{student?.email}</td>
                 <td className="px-6 py-4">{student?.phoneNumber}</td>
+                <td className="px-6 py-4">
+                  {new Date(student?.classRef?.joinedDate).toLocaleDateString()}
+                </td>
                 <td className="px-6 py-4 text-left">
                   <button className="font-medium text-blue-600 hover:underline">
                     View Details
                   </button>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`font-bold ${
+                      student?.isBlocked ? "text-red-600" : "text-green-600"
+                    }`}
+                  >
+                    {student?.isBlocked ? "Blocked" : "Active"}
+                  </span>
                 </td>
               </tr>
             ))}
@@ -107,10 +183,22 @@ const StudentsManage = () => {
           visible={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
           footer={[
-            <Button key="block" onClick={handleBlock}>
-              Block Student
-            </Button>,
-            <Button key="remove" onClick={handleRemove}>
+            selectedStudent?.isBlocked ? (
+              <Button
+                key="unblock"
+                onClick={() => handleUnblock(selectedStudent?._id)}
+              >
+                Unblock Student
+              </Button>
+            ) : (
+              <Button
+                key="block"
+                onClick={() => handleBlock(selectedStudent?._id)}
+              >
+                Block Student
+              </Button>
+            ),
+            <Button key="remove" onClick={() => handleRemove}>
               Remove from Class
             </Button>,
           ]}
@@ -154,7 +242,16 @@ const StudentsManage = () => {
                   {new Date(selectedStudent?.dateOfBirth).toLocaleDateString()}
                 </p>
                 <p style={{ color: "gray", marginBottom: "10px" }}>
+                  <strong>Gender:</strong> {selectedStudent?.gender}
+                </p>
+                <p style={{ color: "gray", marginBottom: "10px" }}>
                   <strong>Address:</strong> {selectedStudent?.address}
+                </p>
+                <p style={{ color: "gray", marginBottom: "10px" }}>
+                  <strong>Joined Date:</strong>{" "}
+                  {new Date(
+                    selectedStudent?.classRef?.joinedDate
+                  ).toLocaleDateString()}
                 </p>
               </div>
             </div>

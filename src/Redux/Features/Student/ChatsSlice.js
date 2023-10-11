@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { fetchChatMessagesApi, fetchChatListApi } from '../../../Services/Student';
+import { Navigate } from 'react-router-dom';
+import useLogout from '../../../Components/Student/Hooks/useLogout';
 
 const initialState = {
     chatMessages: [],
@@ -21,6 +23,10 @@ export const fetchChatMessages = createAsyncThunk('chatData/fetchChatMessages', 
         return response.data;
     } catch (err) {
         message.error(err.response.data.message);
+        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
+            localStorage.removeItem('studentToken')
+            Navigate('/login')
+        }
         throw err;
     }
 });
@@ -35,6 +41,10 @@ export const fetchChatList = createAsyncThunk('chatData/fetchChatList', async (i
         return response.data;
     } catch (err) {
         message.error(err.response.data.message);
+        const { handleLogout } = useLogout();
+        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
+            handleLogout()
+        }
         throw err;
     }
 });

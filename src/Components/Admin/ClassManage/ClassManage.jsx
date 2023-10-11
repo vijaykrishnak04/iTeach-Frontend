@@ -36,6 +36,7 @@ const ClassManage = () => {
 
   const handleAddSyllabus = async (syllabus) => {
     try {
+      console.log(syllabus);
       const resultAction = await dispatch(addSyllabus(syllabus));
       const { payload } = resultAction;
       // Check if the action was fulfilled

@@ -5,7 +5,7 @@ import { getClassById } from "../../../Redux/Features/Teacher/classSlice"; // Ad
 import ChapterManage from "./ChapterManage";
 
 const SubjectView = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,9 +33,11 @@ const SubjectView = () => {
   return (
     <>
       <div className="p-4 mt-24 mx-5 bg-blue-100 rounded-xl">
-        <div className="flex justify-between items-center mb-5">
-          <h1 className="text-xl font-bold mb-4">{classData.name}</h1>
-          <div>
+        <div className="flex flex-col md:flex-row justify-between">
+          <h1 className="text-xl text-center font-bold mb-4">
+            {classData.name}
+          </h1>
+          <div className="flex justify-center items-center mb-5">
             <button
               onClick={handleStudentsList}
               className="ml-4 p-2 bg-green-500 text-white rounded hover:bg-green-600"
@@ -50,6 +52,7 @@ const SubjectView = () => {
             </button>
           </div>
         </div>
+
         <div className="subjects mx-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {classData.subjects.map((subject) => (
             <div

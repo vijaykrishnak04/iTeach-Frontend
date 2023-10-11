@@ -16,6 +16,7 @@ const EditCourse = () => {
   const [courseDescription, setCourseDescription] = useState(
     courseData?.description || ""
   );
+  const [coursePrice, setCoursePrice] = useState(courseData?.price || "");
   const [thumbnail, setThumbnail] = useState(courseData?.thumbnail.url || null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,7 +71,7 @@ const EditCourse = () => {
     if (validator.isEmpty(courseDescription)) {
       newErrors.courseDescription = "Course description is required!";
     }
-
+ 
     if (!thumbnail) {
       newErrors.thumbnail = "Thumbnail is required!";
     }
@@ -91,6 +92,7 @@ const EditCourse = () => {
     const courseData = {
       id,
       courseTitle,
+      coursePrice,
       courseDescription,
       thumbnailFile,
       lessons,
@@ -174,6 +176,21 @@ const EditCourse = () => {
             {errors.thumbnail && (
               <p className="text-red-500">{errors.thumbnail}</p>
             )}
+             <div className="my-5">
+              <label className="block mb-2 text-sm font-medium text-gray-600">
+                Course Price:
+              </label>
+              <input
+                type="number"
+                className="p-2 border rounded w-full transition-border duration-300 hover:border-blue-500"
+                value={coursePrice}
+                onChange={(e) => setCoursePrice(e.target.value)}
+                placeholder="Enter course price..."
+              />
+              {errors.coursePrice && (
+                <p className="text-red-500">{errors.coursePrice}</p>
+              )}
+            </div>
           </div>
 
           {/* Course Details */}
@@ -237,12 +254,14 @@ const EditCourse = () => {
                   </h3>
                   <div className="space-x-2">
                     <button
+                      type="button"
                       onClick={() => editLesson(index)}
                       className="text-sm bg-blue-600 text-white py-1 px-2 rounded-md hover:bg-blue-500 transition-colors duration-300"
                     >
                       Edit
                     </button>
                     <button
+                      type="button"
                       onClick={() => removeLesson(index)}
                       className="text-sm bg-red-600 text-white py-1 px-2 rounded-md hover:bg-red-500 transition-colors duration-300"
                     >

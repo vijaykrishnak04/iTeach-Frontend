@@ -84,6 +84,7 @@ const classSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = 'Error fetching class list';
+        state.classList = [];
       })
 
       .addCase(getClassById.pending, (state) => {

@@ -7,28 +7,31 @@ import {
   faArrowRight,
   faCalendar,
   faHourglassStart,
+  faPeopleGroup,
+  faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 
 const ViewSchedules = () => {
   const [schedules, setSchedules] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dateDisplayIndex, setDateDisplayIndex] = useState(0);
-  const scheduleIds = useSelector(
-    (state) => state.enrollmentData?.enrolledClass?.schedules
+  const classId = useSelector(
+    (state) => state.enrollmentData?.enrolledClass?._id
   );
 
   useEffect(() => {
-    const headers = {
-      Authorization: localStorage.getItem("studentToken"),
-    };
-
-    getSchedulesApi(scheduleIds, headers).then((response) => {
-      const sortedSchedules = response.data.sort(
-        (a, b) => new Date(a.time) - new Date(b.time)
-      );
-      setSchedules(sortedSchedules);
-    });
-  }, [scheduleIds]);
+    if (classId) {
+      const headers = {
+        Authorization: localStorage.getItem("studentToken"),
+      };
+      getSchedulesApi(classId, headers).then((response) => {
+        const sortedSchedules = response.data.sort(
+          (a, b) => new Date(a.time) - new Date(b.time)
+        );
+        setSchedules(sortedSchedules);
+      });
+    }
+  }, [classId]);
 
   const generateDateOptions = () => {
     if (!schedules.length) return [];
@@ -74,9 +77,12 @@ const ViewSchedules = () => {
 
   return (
     <div className="mt-20 p-4">
-      <p className="text-2xl m-6 flex items-center justify-start font-semibold">
-        Schedules <FontAwesomeIcon icon={faCalendar} className="ml-2" />
-      </p>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-800">Schedules</h1>
+          <p className="text-xl text-gray-600">View schedules</p>
+        </div>
+      </div>
       <div className="flex justify-center items-center mb-6">
         {true && (
           <button
@@ -117,32 +123,52 @@ const ViewSchedules = () => {
           </button>
         )}
       </div>
-      <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {filteredSchedules.map((schedule) => (
           <div
-            className="bg-gray-100 p-6 border-l-8 border-amber-300 rounded-lg shadow-md transform transition-transform duration-300 hover:scale-105"
             key={schedule._id}
+            className="bg-white p-4 border-l-4 flex flex-row border-amber-300 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
           >
-            <h3 className="text-xl mb-2">
-              {schedule?.class?.subjectName} {`|`} {schedule.title}{" "}
-            </h3>
-            <p className="mb-2">{schedule.description}</p>
-            <div className="flex items-center justify-between">
-              <div>
-                <FontAwesomeIcon icon={faCalendar} />
-                <span className="ml-2">
-                  {new Date(schedule.time).toLocaleDateString()}
-                </span>
+            <div className="text-2xl flex items-center mr-2">
+              {schedule.type === "live" ? (
+                <FontAwesomeIcon
+                  icon={faPeopleGroup}
+                  className="text-blue-500"
+                />
+              ) : (
+                <FontAwesomeIcon icon={faVideo} className="text-red-500" />
+              )}
+            </div>
+            <div className="w-full">
+              <h3 className="text-sm font-semibold mb-1">
+                {schedule?.class?.subjectName} {`|`} {schedule.title}{" "}
+              </h3>
+              <p className="text-xs font-medium mb-1">{schedule.description}</p>
+              <div className="flex items-center justify-between text-sm">
+                <div>
+                  <FontAwesomeIcon icon={faCalendar} size="xs" />
+                  <span className="ml-1">
+                    {new Date(schedule.time).toLocaleDateString()}
+                  </span>
+                </div>
+                <div>
+                  <FontAwesomeIcon icon={faHourglassStart} size="xs" />
+                  <span className="ml-1">
+                    {new Date(schedule.time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
               </div>
-              <div>
-                <FontAwesomeIcon icon={faHourglassStart} />
-                <span className="ml-2">
-                  {new Date(schedule.time).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-              </div>
+              <a
+                href={schedule.Link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+              >
+                Join Google Meet
+              </a>
             </div>
           </div>
         ))}

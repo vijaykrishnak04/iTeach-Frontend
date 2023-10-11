@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { getCoursesApi } from "../../Services/LandingService";
+import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
   const [courses, SetCourses] = useState([]);
-
+  const navigate = useNavigate()
   useEffect(() => {
     getCoursesApi().then((response) => SetCourses(response.data));
   }, []);
@@ -20,6 +21,7 @@ const Courses = () => {
           <div
             key={course._id}
             className="m-4 transition-transform transform hover:text-orange-600 scale-100 hover:scale-105"
+            onClick={()=> navigate("/login") }
           >
             <div className="max-w-sm overflow-hidden bg-white rounded-lg shadow-lg">
               <img

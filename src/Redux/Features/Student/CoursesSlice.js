@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCourseByIdApi, getCoursesApi } from '../../../Services/Student';
+import { getCourseByIdApi, getPurchasedCoursesApi } from '../../../Services/Student';
 import { message } from 'antd';
+import useLogout from '../../../Components/Student/Hooks/useLogout';
 
 const initialState = {
     courseList: [],
@@ -11,15 +12,18 @@ const initialState = {
     message: '',
 };
 
-export const getCourses = createAsyncThunk('courseData/getCourses', async () => {
+export const getCourses = createAsyncThunk('courseData/getCourses', async (studentId) => {
     try {
         const headers = {
             Authorization: localStorage.getItem("studentToken"),
         };
-        const response = await getCoursesApi(headers);
+        const response = await getPurchasedCoursesApi(studentId, headers);
         return response.data;
     } catch (err) {
-        message.error(err.response.data.message);
+        const { handleLogout } = useLogout();
+        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
+            handleLogout()
+        }
         throw err;
     }
 });
@@ -32,6 +36,10 @@ export const getCourseById = createAsyncThunk('courseData/getCourseById', async 
         const response = await getCourseByIdApi(courseId, headers);
         return response.data;
     } catch (err) {
+        const { handleLogout } = useLogout();
+        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
+            handleLogout()
+        }
         message.error(err.response.data.message);
         throw err;
     }
@@ -59,6 +67,7 @@ const courseSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = 'Error fetching courses list';
+                state.courseList = []
             })
 
             .addCase(getCourseById.pending, (state) => {

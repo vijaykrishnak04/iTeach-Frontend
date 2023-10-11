@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { StudentSignupApi, studentLoginApi } from '../../../Services/LandingService'
 import { editStudentApi, getStudentByIdApi } from '../../../Services/Student';
-
+import { Navigate } from 'react-router-dom';
+import useLogout from '../../../Components/Student/Hooks/useLogout';
 
 
 
@@ -64,6 +65,10 @@ export const getStudentById = createAsyncThunk(
             const response = await getStudentByIdApi(studentId, headers);
             return response.data;
         } catch (error) {
+            const { handleLogout } = useLogout();
+            if (error.response.status === 401 && error.response.data.message === 'This student is blocked.') {
+                handleLogout()
+            }
             if (error.response && error.response.data) {
                 return thunkAPI.rejectWithValue(error.response.data);
             }
@@ -89,6 +94,10 @@ export const editStudent = createAsyncThunk(
             return response.data;
 
         } catch (error) {
+            if (error.response.status === 401 && error.response.data.message === 'This student is blocked.') {
+                localStorage.removeItem('studentToken')
+                Navigate('/login')
+            }
             if (error.response && error.response.data) {
                 // Use thunkAPI.rejectWithValue to dispatch a rejected action
                 return thunkAPI.rejectWithValue(error.response.data);
@@ -136,7 +145,7 @@ export const AuthSlice = createSlice({
                 state.isLoading = false;
                 if (action.payload && action.payload.success) {
                     state.isSuccess = true;
-                    state.studentData = action.payload;
+                    state.studentData = action.payload.student;
                 } else {
                     state.isError = true;
                     state.message = action.payload.error;
@@ -173,8 +182,7 @@ export const AuthSlice = createSlice({
                 state.isLoading = false;
                 if (action.payload && action.payload.success) {
                     state.isSuccess = true;
-                    // Maybe merge new student data or replace the old one
-                    state.studentData = { ...state.studentData, ...action.payload.data };
+                    state.studentData = action.payload.data
                 } else {
                     state.isError = true;
                     state.message = action.payload.error;

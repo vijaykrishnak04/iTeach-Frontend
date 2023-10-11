@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 
 const AddCourse = () => {
   const [courseTitle, setCourseTitle] = useState("");
+  const [coursePrice, setCoursePrice] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -60,6 +61,10 @@ const AddCourse = () => {
       newErrors.courseTitle = "Course title is required!";
     }
 
+    if (validator.isEmpty(coursePrice)) {
+      newErrors.coursePrice = "Course price is required!";
+    }
+
     if (validator.isEmpty(courseDescription)) {
       newErrors.courseDescription = "Course description is required!";
     }
@@ -84,6 +89,7 @@ const AddCourse = () => {
     const courseData = {
       courseTitle,
       courseDescription,
+      coursePrice,
       thumbnailFile,
       lessons,
     };
@@ -125,7 +131,7 @@ const AddCourse = () => {
         <h2 className="text-xl font-semibold text-center">Add a New Course</h2>
         <button
           type="submit"
-          className="bg-gradient-to-r from-green-500 to-green-600 shadow-sm hover:shadow-md text-white px-5 py-2 rounded hover:from-green-600 hover:to-green-700 focus:outline-none focus:shadow-outline-green active:bg-green-800 transition duration-300"
+          className="bg-gradient-to-r from-green-500 to-green-600 shadow-sm hover:shadow-md text-white px-5 py-2 rounded hover:from-green-600 hover:to-green-700 focus:outline-none focus:shadow-outline-green active:bg-green-800 transition-all duration-500"
         >
           Submit Course
         </button>
@@ -166,6 +172,21 @@ const AddCourse = () => {
             {errors.thumbnail && (
               <p className="text-red-500">{errors.thumbnail}</p>
             )}
+            <div className="my-5">
+              <label className="block mb-2 text-sm font-medium text-gray-600">
+                Course Price:
+              </label>
+              <input
+                type="number"
+                className="p-2 border rounded w-full transition-border duration-300 hover:border-blue-500"
+                value={coursePrice}
+                onChange={(e) => setCoursePrice(e.target.value)}
+                placeholder="Enter course price..."
+              />
+              {errors.coursePrice && (
+                <p className="text-red-500">{errors.coursePrice}</p>
+              )}
+            </div>
           </div>
 
           {/* Course Details */}
@@ -188,7 +209,7 @@ const AddCourse = () => {
             </div>
 
             {/* Course Description */}
-            <div className="mb-5">
+            <div className="my-5">
               <label className="block mb-2 text-sm font-medium text-gray-600">
                 Course Description:
               </label>
@@ -216,7 +237,7 @@ const AddCourse = () => {
               Add Lessons
             </button>
           </div>
-          {errors.lessons && <p className="text-red-500">{errors.lessons}</p>}
+          {errors.lessons && <p className="text-red-500 text-center">{errors.lessons}</p>}
           <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {lessons.map((lesson, index) => (
               <div

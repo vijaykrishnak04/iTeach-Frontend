@@ -27,6 +27,7 @@ export const addSyllabus = createAsyncThunk('syllabusData/addSyllabus', async (s
   try {
     const headers = {
       Authorization: localStorage.getItem("adminToken"),
+      "Content-Type": "multipart/form-data",
     };
     const response = await addSyllabusApi(syllabus, headers);
     return response.data;
@@ -96,7 +97,7 @@ const syllabusSlice = createSlice({
         state.message = 'Error adding syllabus';
       })
 
-      
+
       .addCase(deleteSyllabus.pending, (state) => {
         state.isLoading = true;
       })

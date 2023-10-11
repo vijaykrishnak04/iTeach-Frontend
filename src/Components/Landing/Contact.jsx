@@ -1,16 +1,24 @@
+import {
+  faEnvelopeOpenText,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const Contact = () => {
   return (
-    <section className="w-full bg-gray-100 p-8 mt-8">
+    <section className="w-full bg-gray-100 p-8 pt-1">
       <div className="container mx-auto">
         <div className="text-center pt-4 mt-3 pb-3">
           <h1 className="text-3xl text-gray-700">Contact Us</h1>
         </div>
 
         <div className="flex flex-wrap justify-between pb-5 mb-4">
-          <div className="w-full md:w-1/2 lg:w-5/12 mb-4 p-3 rounded bg-white shadow-lg">
-            <div className="flex items-start">
-              <i className="text-orange-500 p-3 rounded-full"></i>
-              <div className="pl-4">
+          <div className="w-full md:w-1/2 lg:w-5/12 mb-4 p-3 flex justify-center rounded bg-white shadow-lg">
+            <div className="flex items-center">
+              <FontAwesomeIcon
+                icon={faEnvelopeOpenText}
+                className="text-orange-600 text-4xl mr-4"
+              />
+              <div>
                 <h3 className="text-xl text-gray-700 pb-1 mb-2">Email us</h3>
                 <p className="text-gray-600 pb-1 mb-2">
                   Please feel free to drop us a line.
@@ -25,8 +33,6 @@ const Contact = () => {
             </div>
           </div>
 
-          
-
           {/* Add more cards similar to the one above here. */}
 
           <div className="w-full md:w-1/2 lg:w-5/12 mb-4">
@@ -39,7 +45,7 @@ const Contact = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded p-5 mb-4 shadow-lg">
+        <div className="bg-white rounded p-10 mb-4 shadow-lg">
           <div className="text-center">
             <h2 className="text-3xl text-gray-700 pb-1 mb-4">
               Leave Us a Message

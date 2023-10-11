@@ -74,13 +74,18 @@ const ChapterView = () => {
             url={selectedLesson?.videoURL}
             controls
           />
-          <div className="mt-4 flex justify-between items-center">
+          <div className="mt-4 flex flex-row justify-between items-center">
             <a
-              href={selectedLesson?.pdfNotes.url}
+              href={selectedLesson?.pdfNotes?.url}
               download
-              className="text-blue-600 hover:underline"
+              className={`${
+                selectedLesson?.pdfNotes?.url ? "" : "hidden"
+              } text-blue-600 hover:underline mb-2 sm:mb-0`}
             >
-              <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+              <button
+                hidden={!selectedLesson?.pdfNotes?.url}
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              >
                 Get PDF Notes
               </button>
             </a>

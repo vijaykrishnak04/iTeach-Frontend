@@ -1,115 +1,177 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+/* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
-import validator from "validator"; // Import the validator library
-import { otpData } from "../../../Redux/Features/Student/OtpSlice";
-import { Modal } from "antd";
+import { message, Modal, Form, Button } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState, useRef } from "react";
+import ChangePasswordModal from "../Auth/ChangePasswordModal";
 
-const OTPPage = ({ isVisible, onClose }) => {
-  const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(() => {
-    const storedTimer = sessionStorage.getItem("otpTimer");
-    return storedTimer ? JSON.parse(storedTimer) : 60;
-  });
+const OTPPage = ({
+  isVisible,
+  onClose,
+  StudentAuth,
+  StudentOtpApi,
+  resend,
+}) => {
+  const [timeLeft, setTimeLeft] = useState(180);
+  const [showResend, setShowResend] = useState(false);
+  const [isOTPModalVisible, setIsOTPModalVisible] = useState(false);
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    let timer;
+    if (timeLeft > 0) {
+      timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    } else {
+      setShowResend(true);
+    }
+    return () => clearTimeout(timer);
+  }, [timeLeft]);
+
+  const [form] = Form.useForm();
   const navigate = useNavigate();
+  const otpRefs = useRef([]);
 
-  const StudentAuth = useSelector(
-    (state) => state?.studentData?.studentData?.response
-  );
-
-  const handleChange = (event) => {
-    setOtp(event.target.value);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleValidation = async () => {
     try {
-      // Validate the entered OTP using the validator library
-      if (!validator.isNumeric(otp) || otp.length !== 6) {
-        message.error(
-          "Invalid OTP format. Please enter a valid 6-digit numeric OTP."
-        );
-        return;
-      }
+      const values = await form.validateFields();
 
       const dataToSend = {
-        ...StudentAuth,
-        otp: otp,
+        StudentAuth,
+        otp: values.otp,
       };
-      const response = await dispatch(otpData(dataToSend));
-      if (response) {
-        console.log(response);
-        navigate("/login");
-        message.success("OTP Verified Successfully");
-        onClose();
-      }
+
+      StudentOtpApi(dataToSend)
+        .then((response) => {
+          console.log(response);
+          if (response.data.message === "Success, account created!") {
+            message.success(
+              response.data.message || "OTP Verified Successfully"
+            );
+            navigate("/login");
+            onClose();
+          } else {
+            setIsOTPModalVisible(true);
+            onClose();
+          }
+        })
+        .catch((response) => {
+          form.setFields([
+            {
+              name: "otp",
+              errors: [response.response.data.error || "Verification failed"],
+            },
+          ]);
+        });
     } catch (error) {
-      console.log("Error occurred during OTP confirmation:", error);
+      return;
+    }
+  };
+  const focusNext = (index, value) => {
+    if (index < 5 && value !== "") {
+      otpRefs.current[index + 1].focus();
     }
   };
 
-  const handleResend = () => {
-    // Here you can add the logic to resend the OTP.
-    setTimer(60); // Reset the timer to 30 seconds when the resend button is clicked.
+  const otpValue = () => {
+    let value = "";
+    otpRefs.current.forEach((input) => {
+      value += input.value;
+    });
+    form.setFieldsValue({ otp: value });
   };
 
-  useEffect(() => {
-    // Timer logic to decrement the timer every second
-    const interval = setInterval(() => {
-      setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0)); // Ensure the timer doesn't go negative
-    }, 1000);
-
-    // Clear the interval when the component is unmounted or timer reaches 0
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    // Persist the timer in session storage
-    sessionStorage.setItem("otpTimer", JSON.stringify(timer));
-  }, [timer]);
-
+  const handleResendOtp = () => {
+    try {
+      if (StudentAuth) {
+        const email = StudentAuth.email;
+        resend(email).then((response) => {
+          if (response.status === 200) {
+            setTimeLeft(180);
+            setShowResend(false);
+          }
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
-    <Modal
-      title="Enter OTP"
-      visible={isVisible}
-      onCancel={onClose}
-      footer={null}
-    >
-      <form
-        onSubmit={handleSubmit}
+    <>
+      <Modal
+        title={
+          <div className="text-center text-lg">
+            <span style={{ borderBottom: "2px solid lightcoral" }}>
+              Enter Otp
+            </span>
+          </div>
+        }
+        open={isVisible}
+        onCancel={onClose}
+        footer={null}
+        centered
       >
-        <input
-          type="text"
-          value={otp}
-          onChange={handleChange}
-          className="w-full px-4 py-2 mb-4 rounded border"
-          maxLength={6}
-          pattern="[0-9]{6}"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Submit
-        </button>
-        {timer > 0 && (
-          <p className="mt-2 text-center">Resend OTP in {timer} seconds</p>
-        )}
-        {timer === 0 && (
-          <button
-            type="button"
-            onClick={handleResend}
-            className="mt-2 w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        <Form form={form} className="space-y-4  p-4">
+          <Form.Item
+            name="otp"
+            rules={[
+              {
+                required: true,
+                message: "OTP is required",
+              },
+            ]}
+            hasFeedback
           >
-            Resend OTP
-          </button>
-        )}
-      </form>
-    </Modal>
+            <div className="flex justify-center space-x-2">
+              {[0, 1, 2, 3, 4, 5].map((_, index) => (
+                <input
+                  ref={(el) => (otpRefs.current[index] = el)}
+                  className="w-8 h-8 border-2 border-black rounded-md text-center text-lg text-black"
+                  maxLength="1"
+                  key={index}
+                  onChange={(e) => {
+                    focusNext(index, e.target.value);
+                    setTimeout(() => {
+                      otpValue();
+                    }, 0);
+                  }}
+                  style={{ fontSize: "1.5rem" }}
+                />
+              ))}
+            </div>
+          </Form.Item>
+        </Form>
+        <div className="flex justify-between items-center text-lg p-3">
+          <Button
+            type="button"
+            onClick={handleValidation}
+            className="bg-green-500 hover:bg-green-600 text-white flex items-center"
+          >
+            Submit
+          </Button>
+          <div className="flex items-center">
+            {showResend ? (
+              <Button
+                type="button"
+                onClick={() => handleResendOtp}
+                className="bg-red-500 hover:bg-red-600 text-white flex items-center space-x-1"
+              >
+                <FontAwesomeIcon icon={faRedo} className="align-middle" />
+                Resend OTP
+              </Button>
+            ) : (
+              <div className="text-black font-semibold">
+                Time left: {Math.floor(timeLeft / 60)}:{timeLeft % 60}
+              </div>
+            )}
+          </div>
+        </div>
+      </Modal>
+      <ChangePasswordModal
+        isVisible={isOTPModalVisible}
+        onClose={() => setIsOTPModalVisible(false)}
+        email={StudentAuth}
+      />
+    </>
   );
 };
 

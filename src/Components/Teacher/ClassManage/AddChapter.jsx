@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { Modal, message } from "antd";
 // Remember to adjust the path for your slice.
 import { addChapter } from "../../../Redux/Features/Teacher/classSlice";
+import validator from "validator";
 
 const AddChapter = () => {
   const [chapterTitle, setChapterTitle] = useState("");
@@ -46,9 +47,9 @@ const AddChapter = () => {
   const validateForm = () => {
     let newErrors = {};
 
-    if (!chapterTitle) {
+    if (validator.isEmpty(chapterTitle.trim())) {
       newErrors.chapterTitle = "Chapter title is required!";
-    }
+    } 
 
     if (lessons.length === 0) {
       newErrors.lessons = "At least one lesson is required!";

@@ -28,7 +28,7 @@ const TeacherManage = () => {
     );
   });
 
-  const subjects = ["Math", "Science", "English"];
+  const subjects = ["Math", "Physics", "English", "Chemistry", "Biology"];
 
   useEffect(() => {
     const headers = {
@@ -160,6 +160,9 @@ const TeacherManage = () => {
                 Email
               </th>
               <th scope="col" className="px-6 py-3">
+                Qualification
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Subject
               </th>
               <th scope="col" className="px-6 py-3">
@@ -177,6 +180,7 @@ const TeacherManage = () => {
                   {teacher.fullName}
                 </th>
                 <td className="px-6 py-4">{teacher.email}</td>
+                <td className="px-6 py-4">{teacher.qualification}</td>
                 <td className="px-6 py-4">{teacher.subject}</td>
                 <td className="px-6 py-4 text-left">
                   {/* Action buttons (Block and Remove) */}

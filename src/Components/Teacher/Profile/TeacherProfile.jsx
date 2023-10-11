@@ -8,6 +8,7 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { teacherEditProfile } from "../../../Redux/Features/Teacher/TeacherProfileSlice";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const TeacherProfile = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const TeacherProfile = () => {
   const [name, setName] = useState(teacherData?.fullName || "");
   const [email, setEmail] = useState(teacherData?.email || "");
   const [isEditing, setIsEditing] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const onImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -127,10 +129,18 @@ const TeacherProfile = () => {
           </button>
         )}
 
-        <button className="bg-yellow-500 text-white px-6 py-2 mt-4 rounded-full hover:bg-yellow-600 transition">
+        <button
+          onClick={() => setIsModalVisible(true)}
+          className="bg-yellow-500 text-white px-6 py-2 mt-4 rounded-full hover:bg-yellow-600 transition"
+        >
           Change Password
         </button>
       </div>
+      <ChangePasswordModal
+        id={teacherData._id}
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+      />
     </div>
   );
 };

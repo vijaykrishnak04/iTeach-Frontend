@@ -23,3 +23,7 @@ export const getCoursesApi = () => {
 export const getTutorsApi = () => {
     return axios.get('/get-tutors')
 }
+
+export const getPricingApi = () => {
+    return axios.get('/get-pricing')
+}

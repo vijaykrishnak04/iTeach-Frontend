@@ -1,8 +1,9 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="text-center py-10 bg-dark-blue">
+    <footer className="text-center py-10 bg-dark-blue bottom-0">
       <div className="flex flex-col items-center">
         {/* Logo */}
         <div className="flex mb-6 items-center">
@@ -12,12 +13,12 @@ const Footer = () => {
         {/* Navigation Links */}
         <ul className="flex space-x-4 pt-4 pb-6">
           <li>
-            <Link to="/" className="text-gray-700 hover:underline">
+            <Link to="/" className="text-gray-200 hover:underline">
               Home
             </Link>
           </li>
           <li>
-            <Link to="/about" className="text-gray-700 hover:underline">
+            <Link to="/about" className="text-gray-200 hover:underline">
               About
             </Link>
           </li>
@@ -58,7 +59,7 @@ const Footer = () => {
             href="your_facebook_link"
             className="btn bg-gray-300 text-gray-700 p-2 rounded-full"
           >
-            <i className="bx bxl-facebook"></i>
+            facebook
           </a>
           {/* ... add more social links */}
         </div>
@@ -71,7 +72,7 @@ const Footer = () => {
           </Link>
         </p>
       </div>
-    </div>
+    </footer>
   );
 };
 

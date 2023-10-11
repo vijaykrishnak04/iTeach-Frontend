@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getClassByIdApi, getClassesApi } from '../../../Services/Student'; // Changed the imported functions to the "class" versions
 import { message } from 'antd';
 
+import useLogout from '../../../Components/Student/Hooks/useLogout';
+
 const initialState = {
     classList: [], // Changed to classList
     currentClass: null, // Changed to currentClass
@@ -19,6 +21,10 @@ export const getClasses = createAsyncThunk('classData/getClasses', async () => {
         const response = await getClassesApi(headers);
         return response.data;
     } catch (err) {
+        const { handleLogout } = useLogout();
+        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
+            handleLogout()
+        }
         message.error(err.response.data.message);
         throw err;
     }
@@ -32,6 +38,10 @@ export const getClassById = createAsyncThunk('classData/getClassById', async (cl
         const response = await getClassByIdApi(classId, headers);
         return response.data;
     } catch (err) {
+        const { handleLogout } = useLogout();
+        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
+            handleLogout()
+        }
         message.error(err.response.data.message);
         throw err;
     }

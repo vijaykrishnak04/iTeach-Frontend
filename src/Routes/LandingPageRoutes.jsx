@@ -3,11 +3,11 @@ import Landing from "../Pages/Landing/Landing";
 import StudentLoginPage from "../Pages/Landing/StudentLoginPage";
 import SignupPage from "../Pages/Landing/SignupPage";
 import TeacherLoginPage from "../Pages/Landing/TeacherLoginPage";
-import OtpPage from "../Pages/Landing/OtpPage";
 import StudentVerification from "../Verification/StudentVerification";
 import TeacherVerification from "../Verification/TeacherVerification";
 import ContactPage from "../Pages/Landing/ContactPage";
 import AboutPage from "../Pages/Landing/AboutPage";
+import PricingPage from "../Pages/Landing/PricingPage";
 const LandingPageRoutes = () => {
   return (
     <Routes>
@@ -36,14 +36,6 @@ const LandingPageRoutes = () => {
         }
       ></Route>
       <Route
-        path="/otp-page"
-        element={
-          <StudentVerification>
-            <OtpPage />
-          </StudentVerification>
-        }
-      ></Route>
-      <Route
         path="/teacher-login"
         element={
           <TeacherVerification>
@@ -53,6 +45,7 @@ const LandingPageRoutes = () => {
       />
       <Route path="/contact" element={<ContactPage />}></Route>
       <Route path="/about" element={<AboutPage />}></Route>
+      <Route path="/pricing" element={<PricingPage />}></Route>
     </Routes>
   );
 };

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const SubjectView = () => {
   const classData = useSelector((state) => state.enrollmentData.enrolledClass);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   if (!classData) {
     return <div className="mt-16">loading....</div>;
@@ -15,12 +15,20 @@ const SubjectView = () => {
 
   return (
     <>
-      <div className="sm:p-4 md:p-6 mx-2 sm:mx-5 bg-blue-100 rounded-xl">
-        <h1 className="text-base sm:text-lg md:text-xl font-bold mb-4">
-          {classData.name}
+      <div className="mx-2 sm:mx-5 bg-blue-100 rounded-xl">
+        <h1 className="text-base sm:text-lg md:text-xl font-bold my-2">
+          {classData?.name}
         </h1>
+        {/* Thumbnail as Banner */}
+        <img
+          src={classData?.thumbnail?.url}
+          alt={`${classData?.name} banner`}
+          className="w-full h-full object-cover rounded-xl mb-2"
+        />
+
+        {/* Class and Subjects Info */}
         <div className="subjects sm:mx-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-4">
-          {classData.subjects.map((subject) => (
+          {classData?.subjects?.map((subject) => (
             <div
               key={subject._id}
               className="subject-card p-2 sm:p-4 bg-orange-200 mx-1 sm:mx-2 my-1 sm:my-2 rounded-xl shadow-md hover:bg-orange-300 cursor-pointer transform transition-transform duration-300 hover:scale-105"

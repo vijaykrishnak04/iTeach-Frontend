@@ -11,8 +11,10 @@ import {
   faArrowLeftLong,
   faArrowRightLong,
   faCalendar,
-  faClock,
+  faHourglassStart,
+  faPeopleGroup,
   faTrash,
+  faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 // Import your Redux actions here
 // import { fetchClasses, fetchSchedules, createSchedule, deleteSchedule } from './path-to-your-actions';
@@ -27,10 +29,20 @@ const ManageSchedules = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
+  const [link, setLink] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [schedules, setSchedules] = useState([]);
-  const [classType, setClassType] = useState('live');
+  const [classType, setClassType] = useState("live");
+  const [classFilter, setClassFilter] = useState("");
+  const [subjectFilter, setSubjectFilter] = useState("");
+
+  const classNames = [
+    ...new Set(schedules.map((schedule) => schedule.class.className)),
+  ];
+  const subjectNames = [
+    ...new Set(schedules.map((schedule) => schedule.class.subjectName)),
+  ];
 
   const validateForm = () => {
     let errors = {};
@@ -49,6 +61,10 @@ const ManageSchedules = () => {
 
     if (!description.trim()) {
       errors.description = "Description is required!";
+    }
+
+    if (!link.trim()) {
+      errors.link = "Link is required!";
     }
 
     if (!time) {
@@ -98,9 +114,10 @@ const ManageSchedules = () => {
     setTitle("");
     setDescription("");
     setTime("");
-    setClassType("live")
+    setClassType("live");
     setFormErrors({});
     setIsModalVisible(false);
+    setLink("");
   };
 
   // Fetching classes and schedules from the Redux store
@@ -127,6 +144,17 @@ const ManageSchedules = () => {
       month: monthNames[date.getMonth()],
       day: dayNames[date.getDay()],
     };
+  };
+
+  const getMinDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, "0"); // pad with '0' to get 2 digits
+    const day = now.getDate().toString().padStart(2, "0");
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   const filteredSchedules = schedules.filter((schedule) =>
@@ -186,12 +214,10 @@ const ManageSchedules = () => {
       title,
       description,
       time,
-      classType
+      link,
+      classType,
     };
-    setSelectedClassAndSubject("");
-    setTitle("");
-    setDescription("");
-    setTime("");
+    handleCancel();
     addScheduleApi(schedule, headers).then((response) =>
       setSchedules((prevschedules) => [...prevschedules, response.data])
     );
@@ -226,24 +252,33 @@ const ManageSchedules = () => {
     });
   };
 
+  const classAndSubjectFilteredSchedules = filteredSchedules.filter(
+    (schedule) => {
+      return (
+        (classFilter === "" || schedule?.class?.className === classFilter) &&
+        (subjectFilter === "" || schedule?.class?.subjectName === subjectFilter)
+      );
+    }
+  );
+
   return (
-    <div className="mt-28 px-4 md:px-0 mx-10">
-      <div className="flex justify-between flex-row">
-        <h2 className="mb-6 text-xl font-semibold text-gray-800">
+    <div className="mt-28 px-4 md:px-0 mx-2 md:mx-10">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">
           Manage Schedules
         </h2>
         <button
           onClick={showModal}
-          className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 mb-6 flex items-center"
+          className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
         >
           <i className="fas fa-plus-circle mr-2"></i> Create New Schedule
         </button>
       </div>
 
-      <div className="flex justify-center items-center mb-6">
+      <div className="flex flex-wrap justify-center items-center mb-6">
         <button
           onClick={() => slideDates("left")}
-          className="bg-gray-200 p-4 rounded-l-md hover:bg-gray-300"
+          className="bg-gray-200 p-2 md:p-4 rounded-l-md hover:bg-gray-300"
         >
           <FontAwesomeIcon icon={faArrowLeftLong} />
         </button>
@@ -274,10 +309,37 @@ const ManageSchedules = () => {
 
         <button
           onClick={() => slideDates("right")}
-          className="bg-gray-200 p-4 rounded-r-md hover:bg-gray-300"
+          className="bg-gray-200 p-2 md:p-4 rounded-r-md hover:bg-gray-300"
         >
           <FontAwesomeIcon icon={faArrowRightLong} />
         </button>
+      </div>
+
+      <div className="mb-4">
+        <select
+          value={classFilter}
+          onChange={(e) => setClassFilter(e.target.value)}
+          className="mr-4"
+        >
+          <option value="">All Classes</option>
+          {classNames.map((name, index) => (
+            <option key={index} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={subjectFilter}
+          onChange={(e) => setSubjectFilter(e.target.value)}
+        >
+          <option value="">All Subjects</option>
+          {subjectNames.map((name, index) => (
+            <option key={index} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <Modal
@@ -352,6 +414,7 @@ const ManageSchedules = () => {
 
           <input
             type="datetime-local"
+            min={getMinDateTime()}
             value={time}
             onChange={(e) => setTime(e.target.value)}
             className="py-2 px-4 rounded bg-gray-200"
@@ -361,29 +424,16 @@ const ManageSchedules = () => {
             <p className="text-red-500 mt-1">{formErrors.time}</p>
           )}
 
-          <div className="flex items-center space-x-4">
-            <input
-              type="radio"
-              id="liveClass"
-              name="classType"
-              value="live"
-              checked={classType === "live"}
-              onChange={(e) => setClassType(e.target.value)}
-              className="form-radio text-blue-500"
-            />
-            <label htmlFor="liveClass">Live Class</label>
-
-            <input
-              type="radio"
-              id="videoClass"
-              name="classType"
-              value="video"
-              checked={classType === "video"}
-              onChange={(e) => setClassType(e.target.value)}
-              className="form-radio text-blue-500"
-            />
-            <label htmlFor="videoClass">Video</label>
-          </div>
+          <input
+            type="text"
+            placeholder="Google meet link..."
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            className="py-2 px-4 rounded bg-gray-200"
+          />
+          {formErrors.link && (
+            <p className="text-red-500 mt-1">{formErrors.link}</p>
+          )}
 
           <button
             onClick={handleSubmit}
@@ -394,33 +444,64 @@ const ManageSchedules = () => {
         </div>
       </Modal>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-        {filteredSchedules.map((schedule) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {classAndSubjectFilteredSchedules.map((schedule) => (
           <div
             key={schedule._id}
-            className="bg-gray-100 border-l-8 border-blue-500 shadow-md rounded p-6 transition transform duration-500 hover:scale-105 relative overflow-hidden"
+            className="bg-white border-l-4 flex flex-row border-blue-500 shadow-md rounded-lg p-4 hover:shadow-lg transition-all duration-300 hover:scale-105"
           >
-            <h3 className="text-lg font-medium mb-2 text-gray-800">
-              {schedule.title}
-            </h3>
-            <p className="mb-4 text-sm text-gray-600">{schedule.description}</p>
-            <div className="flex items-center text-sm text-gray-500 mb-4 space-x-2">
-              <FontAwesomeIcon icon={faCalendar} className="mr-2" />
-              Date: {new Date(schedule.time).toLocaleDateString()}
-              <FontAwesomeIcon icon={faClock} className="mx-4 " />:{" "}
-              {new Date(schedule.time).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+            <div className="text-2xl flex items-center mr-4">
+              {schedule.type === "live" ? (
+                <FontAwesomeIcon
+                  icon={faPeopleGroup}
+                  className="text-blue-500"
+                />
+              ) : (
+                <FontAwesomeIcon icon={faVideo} className="text-red-500" />
+              )}
             </div>
-            <button
-              className="mt-2 bg-red-600 text-white rounded p-2 hover:bg-red-700 flex items-center"
-              onClick={() => {
-                handleDelete(schedule._id);
-              }}
-            >
-              <FontAwesomeIcon icon={faTrash} className="mr-2" /> Delete
-            </button>
+            <div className="w-full">
+              <h3 className="text-sm font-semibold mb-1">
+                {schedule?.class?.className} | {schedule?.class?.subjectName}{" "}
+                {`|`} {schedule.title}{" "}
+              </h3>
+              <p className="text-xs font-medium mb-1">{schedule.description}</p>
+              <div className="flex items-center justify-between text-sm">
+                <div>
+                  <FontAwesomeIcon icon={faCalendar} size="xs" />
+                  <span className="ml-1">
+                    {new Date(schedule.time).toLocaleDateString()}
+                  </span>
+                </div>
+                <div>
+                  <FontAwesomeIcon icon={faHourglassStart} size="xs" />
+                  <span className="ml-1">
+                    {new Date(schedule.time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+              </div>
+              <a
+                href={schedule.Link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+              >
+                Join Google Meet
+              </a>
+            </div>
+            <div className="">
+              <button
+                className="bg-red-600 text-white rounded-full py-1 px-3 hover:bg-red-700 flex items-center text-sm"
+                onClick={() => {
+                  handleDelete(schedule._id);
+                }}
+              >
+                <FontAwesomeIcon icon={faTrash} className="mr-1" /> Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>

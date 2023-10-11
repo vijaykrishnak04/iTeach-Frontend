@@ -7,6 +7,7 @@ import {
   faCheck,
   faKey,
   faTimes,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { Modal, message } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
@@ -16,12 +17,22 @@ import {
 } from "../../../Redux/Features/Student/AuthSlice";
 import ClassSection from "../Home/ClassSection";
 import ExamResult from "./ExamResult";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const StudentProfile = () => {
   const studentData = useSelector((state) => state.studentData.studentData);
   const classes = useSelector((state) => state.classData.classList);
+  const currentClassName = useSelector(
+    (state) => state.enrollmentData?.enrolledClass?.name
+  );
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const formatDate = (isoDate) => {
+    if(!isoDate){
+      return null
+    }
     const date = new Date(isoDate);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are 0-indexed
@@ -38,7 +49,7 @@ const StudentProfile = () => {
     email: studentData.email,
     phoneNumber: studentData.phoneNumber,
     classRef: studentData.classRef,
-    gender: studentData.gender || "", // You can set default values if needed.
+    gender: studentData.gender || "",
     dateOfBirth: formattedDate || "",
     address: studentData.address || "",
   };
@@ -108,6 +119,7 @@ const StudentProfile = () => {
   const fileInput = useRef(null);
 
   const handleImageChange = async (e) => {
+    setIsLoading(true);
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const formData = new FormData();
@@ -115,24 +127,17 @@ const StudentProfile = () => {
       formData.append("photo", file);
 
       try {
-        const headers = {
-          Authorization: localStorage.getItem("studentToken"),
-          // Since we're using FormData, you might not need to explicitly set the Content-Type header
-          // but I'll leave it here in case you need it.
-          "Content-Type": "multipart/form-data",
-        };
-
         // Dispatch the editStudent asyncThunk
         // Assuming studentId and student are accessible in the scope
         await dispatch(
           editStudent({
             studentId,
             studentData: formData,
-            headers,
           })
         );
 
         // If you need any post-success actions like updating local state or UI, add them here
+        setIsLoading(false);
         message.success("Photo uploaded successfully!");
       } catch (error) {
         console.error("Error uploading photo:", error);
@@ -174,6 +179,7 @@ const StudentProfile = () => {
                 className="text-center"
               >
                 <FontAwesomeIcon icon={faCamera} className="text-gray-500" />
+                {isLoading && <FontAwesomeIcon icon={faSpinner} spin />}{" "}
                 <span className="block text-gray-500">Add Photo</span>
               </button>
             </div>
@@ -182,18 +188,26 @@ const StudentProfile = () => {
           <h2 className="mt-4 text-xl">{student.name}</h2>
 
           <div className="mt-4 flex flex-col">
+            <p className="text-lg text-start mb-2 p-2">
+              <span className="font-semibold ">Current Class:</span> {currentClassName}
+            </p>
+            <p className="text-lg text-start mb-2 p-2">
+              <span className="font-semibold">Joined Date:</span>{" "}
+              {formatDate(studentData?.classRef?.joinedDate)}
+            </p>
             <p className="text-xl text-start font-bold mb-3 p-2">
               Change Class
             </p>
             <ClassSection studentData={studentId} classData={classes} />
           </div>
+
           <div className="mt-4 flex flex-col items-start p-4 bg-gray-100 rounded-md shadow-lg overflow-y-auto max-h-[calc(100vh-2rem)]">
             <ExamResult exam={studentData.exam} />
           </div>
         </div>
       </div>
 
-      <div className="md:w-1/2 bg-yellow-200 rounded-lg p-8 shadow-md">
+      <div className="md:w-1/2 bg-slate-50 rounded-lg p-8 shadow-md">
         <form onSubmit={handleSubmit}>
           {/* Full Name */}
           <label
@@ -228,10 +242,8 @@ const StudentProfile = () => {
             type="email"
             required
             value={student.email}
-            className={`border p-2 w-full mb-3 ${
-              !editing ? "bg-gray-100" : ""
-            }`}
-            readOnly={!editing}
+            className="border p-2 w-full mb-3"
+            disabled
             onChange={(e) =>
               setStudent((prev) => ({ ...prev, email: e.target.value }))
             }
@@ -276,8 +288,8 @@ const StudentProfile = () => {
               setStudent((prev) => ({ ...prev, gender: e.target.value }))
             }
           >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
             <option value="other">Other</option>
           </select>
 
@@ -323,12 +335,12 @@ const StudentProfile = () => {
           />
 
           {/* Actions */}
-          <div className="mt-2">
+          <div className="mt-2 transform duration-500">
             {/* Toggle Editing Button (Visible when not in editing mode) */}
             {!editing && (
               <button
                 onClick={() => setEditing(true)}
-                className="mr-4 p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="mr-4 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-500"
               >
                 <FontAwesomeIcon icon={faEdit} /> Edit Details
               </button>
@@ -339,7 +351,7 @@ const StudentProfile = () => {
               <>
                 <button
                   type="submit"
-                  className="p-2 mr-4 bg-green-600 text-white rounded hover:bg-green-700 shadow-md"
+                  className="p-2 mr-4 bg-green-600 text-white rounded hover:bg-green-700 shadow-md transition-all duration-500"
                 >
                   <FontAwesomeIcon icon={faCheck} /> Done
                 </button>
@@ -347,19 +359,28 @@ const StudentProfile = () => {
                 {/* Cancel Button */}
                 <button
                   onClick={() => setEditing(false)}
-                  className="p-2 mr-4 bg-red-600 text-white rounded hover:bg-red-700 shadow-md"
+                  className="p-2 mr-4 bg-red-600 text-white rounded hover:bg-red-700 shadow-md transition-all duration-500"
                 >
                   <FontAwesomeIcon icon={faTimes} /> Cancel
                 </button>
               </>
             )}
 
-            <button className="p-2 bg-green-600 text-white rounded hover:bg-green-700 shadow-md">
+            <button
+              type="button"
+              onClick={() => setIsModalVisible(true)}
+              className="p-2 bg-green-600 text-white rounded hover:bg-green-700 shadow-md transition-all duration-500"
+            >
               <FontAwesomeIcon icon={faKey} /> Change Password
             </button>
           </div>
         </form>
       </div>
+      <ChangePasswordModal
+        id={studentId}
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+      />
     </div>
   );
 };

@@ -27,11 +27,6 @@ const CourseView = () => {
     setIsLoading(false);
   }, [dispatch, id]);
 
-  const getVideoId = (url) => {
-    const parts = url.split("/");
-    return parts[parts.length - 1];
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen p-4 mt-24 m-5 bg-slate-100 rounded-xl">
@@ -42,17 +37,17 @@ const CourseView = () => {
 
   return (
     <div className="p-2 sm:p-4 mt-24 sm:mt-24 m-3 sm:m-5 bg-slate-100 rounded-xl">
-      <h1 className="text-xl font-bold mb-4">{course.title}</h1>
+      <h1 className="text-xl font-bold mb-4">{course?.title}</h1>
       <div className="lessons m-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {course.lessons.map((lesson) => {
-          const videoId = getVideoId(lesson.videoURL);
+        {course?.lessons?.map((lesson) => {
+          const videoId = lesson?.videoURL.split("/").pop().split("?")[0];
           const thumbnailURL = `https://img.youtube.com/vi/${videoId}/0.jpg`;
 
           return (
             <div
               className="lesson-card p-4 bg-orange-200 m-2 rounded-xl shadow-md hover:bg-orange-300 cursor-pointer transform transition-transform duration-300 hover:scale-105"
               onClick={() => openModal(lesson)}
-              key={lesson._id}
+              key={lesson?._id}
             >
               <img
                 src={thumbnailURL}
@@ -60,9 +55,9 @@ const CourseView = () => {
                 className="rounded w-full max-w-sm"
               />
               <h3 className="font-semibold text-sm sm:text-base mb-1">
-                {lesson.lessonTitle}
+                {lesson?.lessonTitle}
               </h3>
-              <p className="text-xs">{lesson.lessonDescription}</p>
+              <p className="text-xs">{lesson?.lessonDescription}</p>
             </div>
           );
         })}
@@ -79,20 +74,20 @@ const CourseView = () => {
             {selectedLesson?.lessonTitle}
           </h2>
 
-          <ReactPlayer
-            url={selectedLesson?.videoURL}
-            controls
-            width="100%"
-            
-          />
+          <ReactPlayer url={selectedLesson?.videoURL} controls width="100%" />
 
           <div className="mt-4 flex flex-row justify-between items-center">
             <a
-              href={selectedLesson?.pdfNotes.url}
+              href={selectedLesson?.pdfNotes?.url}
               download
-              className="text-blue-600 hover:underline mb-2 sm:mb-0"
+              className={`${
+                selectedLesson?.pdfNotes?.url ? "" : "hidden"
+              } text-blue-600 hover:underline mb-2 sm:mb-0`}
             >
-              <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+              <button
+                hidden={!selectedLesson?.pdfNotes?.url}
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              >
                 Get PDF Notes
               </button>
             </a>

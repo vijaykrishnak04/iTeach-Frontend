@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { StudentAuth } from "../../../Redux/Features/Student/AuthSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+ 
+  faEye,
+  faEyeSlash,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import OTPPage from "../Otp/Otp";
+import { StudentOtpApi } from "../../../Services/LandingService";
+import validator from "validator";
 
 const Signup = () => {
   // State to hold user input
@@ -18,7 +25,7 @@ const Signup = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const [isOTPModalVisible, setIsOTPModalVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -52,9 +59,8 @@ const Signup = () => {
     validateEmail(currentValue);
   };
 
-  const validateEmail = () => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
+  const validateEmail = (value) => {
+    if (!validator.isEmail(value)) {
       setEmailError("Please enter a valid email address");
     } else {
       setEmailError("");
@@ -68,8 +74,7 @@ const Signup = () => {
   };
 
   const validatePassword = (value) => {
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    if (!passwordPattern.test(value)) {
+    if (!validator.isStrongPassword(value)) {
       setPasswordError(
         "Password must be at least 8 characters long and contain at least one letter and one number"
       );
@@ -115,20 +120,29 @@ const Signup = () => {
       phoneNumber,
     };
 
+    setIsLoading(true);
     dispatch(StudentAuth(values))
       .then((response) => {
         if (StudentAuth.fulfilled.match(response)) {
+          setIsLoading(false);
+         
           setIsOTPModalVisible(true);
         } else if (response.error || StudentAuth.rejected.match(response)) {
+          setIsLoading(false);
           setEmailError(response.payload.error);
           toast.error(response.error.message);
         }
       })
       .catch((err) => {
+        setIsLoading(false);
         toast.error(err.response.data.error);
         console.log(err.response);
       });
   };
+
+  const Student = useSelector(
+    (state) => state?.studentData?.studentData?.response
+  );
 
   return (
     <>
@@ -301,8 +315,9 @@ const Signup = () => {
                 <div className="flex flex-col items-center mt-4">
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-3xl w-60 h-14 font-bold text-white bg-green-900 hover:bg-green-700 focus:outline-none"
+                    className="px-4 py-2 rounded-3xl w-60 h-14 font-bold text-white bg-green-900 hover:bg-green-700 focus:outline-none transition-all duration-300"
                   >
+                    {isLoading && <FontAwesomeIcon icon={faSpinner} spin />}{" "}
                     Sign Up
                   </button>
                   <button
@@ -319,6 +334,8 @@ const Signup = () => {
         <OTPPage
           isVisible={isOTPModalVisible}
           onClose={() => setIsOTPModalVisible(false)}
+          StudentAuth={Student}
+          StudentOtpApi={StudentOtpApi}
         />
       </div>
     </>

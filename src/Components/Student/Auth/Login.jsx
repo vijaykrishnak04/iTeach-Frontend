@@ -3,8 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { StudentLogin } from "../../../Redux/Features/Student/AuthSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-
+import {
+  faEye,
+  faEyeSlash,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 const Login = () => {
   // State to hold the user's input
   const [email, setEmail] = useState("");
@@ -12,38 +16,32 @@ const Login = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const dispatch = useDispatch();  
+  const [isModalvisible, setIsModalVisible] = useState(false);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Handle input changes
   const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-    validateEmail();  // Add this line
-  };
-  
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-    validatePassword();  // Add this line
+    const currentValue = e.target.value;
+    setEmail(currentValue);
+    validateEmail(currentValue); // Add this line
   };
 
-  const validateEmail = () => {
+  const handlePasswordChange = (e) => {
+    setPasswordError("");
+    setPassword(e.target.value);
+  };
+
+  const validateEmail = (value) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    console.log(value);
     if (!emailPattern.test(email)) {
       setEmailError("Please enter a valid email address");
     } else {
       setEmailError("");
-    }
-  };
-
-  const validatePassword = () => {
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    if (!passwordPattern.test(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters long and contain at least one letter and one number"
-      );
-    } else {
-      setPasswordError("");
     }
   };
 
@@ -52,7 +50,6 @@ const Login = () => {
     e.preventDefault();
 
     validateEmail();
-    validatePassword();
 
     if (emailError || passwordError) {
       // If there's an error, we stop here and don't proceed with the login attempt.
@@ -63,7 +60,8 @@ const Login = () => {
       email: email,
       password: password,
     };
-
+    console.log(formData);
+    setIsLoading(true);
     dispatch(StudentLogin(formData))
       .then((responseAction) => {
         if (StudentLogin.fulfilled.match(responseAction)) {
@@ -71,6 +69,7 @@ const Login = () => {
           localStorage.setItem("studentToken", jwtToken);
           navigate("/student/home");
         } else if (StudentLogin.rejected.match(responseAction)) {
+          setIsLoading(false);
           if (
             responseAction.payload.message ===
             "The user with the email does not exist"
@@ -136,7 +135,7 @@ const Login = () => {
                     </p>
                   )}
                 </div>
-                <div className="mb-6 relative">
+                <div className="mb-3 relative">
                   <label
                     htmlFor="password"
                     className={`block text-sm font-medium ${
@@ -186,14 +185,26 @@ const Login = () => {
                   )}
                 </div>
 
+                <div className="flex justify-end mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalVisible(true)}
+                    className="text-blue-500 hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+
                 <div className="flex justify-center mb-4">
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-3xl w-60 h-14 font-bold text-white bg-green-900 hover:bg-green-700 focus:outline-none"
                   >
+                    {isLoading && <FontAwesomeIcon icon={faSpinner} spin />}{" "}
                     LOGIN
                   </button>
                 </div>
+
                 <div className="flex justify-center">
                   <button
                     onClick={() => navigate("/signup")}
@@ -206,6 +217,10 @@ const Login = () => {
             </div>
           </div>
         </div>
+        <ForgotPasswordModal
+          isVisible={isModalvisible}
+          onClose={() => setIsModalVisible(false)}
+        />
       </div>
     </div>
   );

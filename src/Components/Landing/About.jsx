@@ -8,7 +8,7 @@ const About = () => {
     getTutorsApi().then((response) => setTutors(response.data));
   }, []);
   return (
-    <div className="container mx-auto mb-12 mt-16 p-6">
+    <div className="container mx-auto mb-12 mt-3 p-6">
       <div className="p-0 flex flex-row justify-between">
         <div className="mb-2">
           <div>

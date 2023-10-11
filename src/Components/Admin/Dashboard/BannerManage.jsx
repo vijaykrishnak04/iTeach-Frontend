@@ -13,7 +13,6 @@ import {
   deleteBannerApi,
   getBannersApi,
 } from "../../../Services/Admin";
-import { Carousel } from "flowbite-react";
 
 const BannerManage = () => {
   const [bannerImage, setBannerImage] = useState(null);
@@ -25,8 +24,6 @@ const BannerManage = () => {
   const headers = {
     Authorization: localStorage.getItem("adminToken"),
   };
-
-  console.log(bannersFromDB);
 
   useEffect(() => {
     const fetchBanners = async () => {

@@ -121,7 +121,7 @@ const TeacherNavBar = () => {
                     location.pathname === "/teacher/home"
                       ? "text-orange-600"
                       : "text-gray-900"
-                  } rounded hover:bg-gray-100 text-sm`}
+                  } rounded hover:bg-gray-100 text-sm transition duration-300`}
                 >
                   <FontAwesomeIcon icon={faHome} />
                   <span>Home</span>
@@ -135,7 +135,7 @@ const TeacherNavBar = () => {
                     location.pathname === "/teacher/exams"
                       ? "text-orange-600"
                       : "text-gray-900"
-                  } rounded hover:bg-gray-100 text-sm`}
+                  } rounded hover:bg-gray-100 text-sm transition duration-300`}
                 >
                   <FontAwesomeIcon icon={faPencilAlt} />
                   <span>Exams</span>
@@ -148,7 +148,7 @@ const TeacherNavBar = () => {
                     location.pathname === "/teacher/chats"
                       ? "text-orange-600"
                       : "text-gray-900"
-                  } rounded hover:bg-gray-100 text-sm`}
+                  } rounded hover:bg-gray-100 text-sm transition duration-300`}
                 >
                   <FontAwesomeIcon icon={faComments} />
                   <span>Chats</span>
@@ -161,7 +161,7 @@ const TeacherNavBar = () => {
                     location.pathname === "/teacher/schedules"
                       ? "text-orange-600"
                       : "text-gray-900"
-                  } rounded hover:bg-gray-100 text-sm`}
+                  } rounded hover:bg-gray-100 text-sm transition duration-300`}
                 >
                   <FontAwesomeIcon icon={faCalendarAlt} />
                   <span>Schedules</span>

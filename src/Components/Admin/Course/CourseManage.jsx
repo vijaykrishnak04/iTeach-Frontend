@@ -160,6 +160,9 @@ const handleRemoveCourse = async (courseId) => {
                 Name
               </th>
               <th scope="col" className="px-6 py-3">
+                Price
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Lessons
               </th>
               <th scope="col" className="px-6 py-3">
@@ -182,6 +185,7 @@ const handleRemoveCourse = async (courseId) => {
                   />
                 </td>
                 <td className="px-6 py-4">{course.title}</td>
+                <td className="px-6 py-4">{course.price}</td>
                 <td className="px-6 py-4">{course.lessons.length}</td>
                 <td className="px-6 py-4 text-left">
                   <button

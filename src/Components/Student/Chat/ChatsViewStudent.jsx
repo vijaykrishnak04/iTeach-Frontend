@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getTeachersApi } from "../../../Services/Student";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faPaperPlane,
+  faPlus,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   addChatToChatList,
   addMessageToChatList,
@@ -40,14 +44,12 @@ const ChatsView = () => {
       dateObj = new Date(timestamp);
     }
 
-    // Separate date and time for better formatting control
-    const dateStr = dateObj.toLocaleDateString(); // default date format
     const timeStr = dateObj.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     }); // 2-digit hour and minute without seconds
 
-    return `${dateStr} ${timeStr}`;
+    return `${timeStr}`;
   };
 
   useEffect(() => {
@@ -67,6 +69,7 @@ const ChatsView = () => {
   useEffect(() => {
     socket.on("recieve-message", (incomingMessage) => {
       dispatch(addMessageToChatList(incomingMessage));
+      console.log(incomingMessage.senderId + " " + activeChat.teacherId)
       if (incomingMessage.senderId === activeChat.teacherId) {
         setMessages((prevMessages) => [...prevMessages, incomingMessage]);
       }
@@ -109,10 +112,40 @@ const ChatsView = () => {
     }
   }, [messages]);
 
+  const formatHeaderDate = (dateString) => {
+    // Logic to show "Today", "Yesterday", or the actual date
+    const today = new Date().toLocaleDateString();
+    const yesterday = new Date(Date.now() - 86400000).toLocaleDateString();
+
+    if (dateString === today) return "Today";
+    if (dateString === yesterday) return "Yesterday";
+    return dateString;
+  };
+
+  const groupByDate = (messages) => {
+    const grouped = {};
+
+    messages.forEach((message) => {
+      const date = new Date(message.timestamp).toLocaleDateString();
+      if (!grouped[date]) {
+        grouped[date] = [];
+      }
+      grouped[date].push(message);
+    });
+
+    return grouped;
+  };
+
+  const messagesGrouped = groupByDate(messages);
+
   return (
     <div className="flex flex-col md:flex-row w-full h-screen pt-28 px-5 pb-5">
       {/* Users list */}
-      <div className="w-full md:w-1/3 h-1/4 md:h-full border rounded p-4 overflow-y-auto bg-blue-50">
+      <div
+        className={`w-full md:w-1/3  md:h-full border rounded p-4 overflow-y-scroll ${
+          activeChat ? "hidden md:block" : ""
+        } bg-blue-50`}
+      >
         {/* Search bar */}
         <input
           type="text"
@@ -138,7 +171,7 @@ const ChatsView = () => {
               activeChat.teacherId === user.teacherId
                 ? "bg-blue-100"
                 : "hover:bg-blue-100"
-            }  flex items-center transition duration-300`}
+            }  flex items-center rounded-md transition duration-300`}
           >
             <img
               src={user.teacherInfo?.teacherImage}
@@ -151,12 +184,25 @@ const ChatsView = () => {
       </div>
 
       {/* Chat area */}
-      <div className="w-full md:w-2/3 h-3/4 md:h-full border rounded p-4 flex flex-col ml-0 md:ml-4 bg-blue-100">
-        <div className="text-xl mb-2 flex flex-row justify-center border-b-2 border-black">
+      <div
+        className={`w-full md:w-3/4 lg:w-4/5 h-full border rounded p-4 flex flex-col ml-0 md:ml-4 ${
+          activeChat ? "" : "hidden md:block"
+        } bg-blue-100`}
+      >
+        <div className="text-xl mb-2 flex flex-row justify-center border-b-2 border-blue-300 pb-3">
+          <div className="md:hidden flex items-center mr-4">
+            <button
+              onClick={() => {
+                setActiveChat(""), setMessages([]), setYourMessage("");
+              }}
+            >
+              <FontAwesomeIcon icon={faArrowLeft} />
+            </button>
+          </div>
           {/* Check if there's an active chat */}
           {
             activeChat ? (
-              <>
+              <div className="flex items-center">
                 {/* Display user's image */}
                 <img
                   src={activeChat.teacherInfo?.teacherImage}
@@ -165,7 +211,7 @@ const ChatsView = () => {
                 />
                 {/* Display user's full name */}
                 {activeChat.teacherInfo?.fullName}
-              </>
+              </div>
             ) : (
               "Select a user to start chatting"
             ) /* Display message if there's no active chat */
@@ -176,21 +222,28 @@ const ChatsView = () => {
           className="flex-1 overflow-y-scroll flex flex-col"
           ref={chatContainerRef}
         >
-          {messages &&
-            messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`p-2 rounded m-2 text-black ${
-                  msg.senderId === studentData._id
-                    ? "bg-blue-300 ml-auto"
-                    : "bg-gray-300 mr-auto"
-                } transition duration-300 transform hover:scale-105`}
-              >
-                {msg.text}
-                <div className="text-xs mt-1">{formatDate(msg.timestamp)}</div>
+          {Object.keys(messagesGrouped).map((date, index) => (
+            <div key={index} className="flex flex-col">
+              <div className="text-center text-gray-600">
+                {formatHeaderDate(date)}
               </div>
-            ))}
-          {/* <div ref={}></div> */}
+              {messagesGrouped[date].map((msg, i) => (
+                <div
+                  key={i}
+                  className={`p-2 rounded m-2 text-sm text-black ${
+                    msg.senderId === studentData._id
+                      ? "bg-blue-300 ml-auto"
+                      : "bg-gray-300 mr-auto"
+                  }`}
+                >
+                  {msg.text}
+                  <div className="text-xs mt-1">
+                    {formatDate(msg.timestamp)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
 
         <div className="border-t p-2 flex">
@@ -200,7 +253,13 @@ const ChatsView = () => {
             className="flex-1 p-2 rounded mr-2"
             value={yourMessage}
             onChange={(e) => setYourMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSendMessage();
+              }
+            }}
           />
+
           <button
             onClick={handleSendMessage}
             className="p-2 rounded bg-blue-500 hover:bg-blue-600 text-white transition duration-300 shadow-md"
@@ -212,7 +271,7 @@ const ChatsView = () => {
 
       {/* Antd Modal */}
       <Modal
-        title="Select User to Start Chatting"
+        title="Select Teacher to Start Chatting"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}

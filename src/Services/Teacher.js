@@ -9,6 +9,10 @@ export const teacherEditProfileApi = (headers, formData) => {
     return axios.post('/teacher/edit-profile', formData, { headers })
 }
 
+export const changePasswordApi = (teacherId, credentials, headers) => {
+    return axios.put(`/teacher/change-password/${teacherId}`, credentials, { headers })
+}
+
 export const getClassesApi = (headers) => {
     return axios.get('/teacher/get-classes', { headers });
 }
@@ -53,7 +57,11 @@ export const getStudentByIdsApi = (studentIds, headers) => {
 }
 
 export const blockStudent = (id, headers) => {
-    return axios.get(`/teacher/block-student/`, { headers });
+    return axios.patch('/teacher/block-student', { id }, { headers });
+}
+
+export const unblockStudent = (id, headers) => {
+    return axios.patch('/teacher/unblock-student', { id }, { headers });
 }
 
 // Chat related API calls
@@ -74,6 +82,10 @@ export const addScheduleApi = (formData, headers) => {
 
 export const getSchedulesApi = (headers) => {
     return axios.get('/teacher/get-schedules', { headers })
+}
+
+export const getTodaySchedulesApi = (headers) => {
+    return axios.get('/teacher/get-today-schedules', { headers })
 }
 
 export const deleteScheduleApi = (id, headers) => {
