@@ -43,7 +43,7 @@ const PurchasedCourses = () => {
         className="p-2 mb-4 w-full border rounded transform transition-transform duration-300 hover:scale-105"
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {currentCourses.map((course) => (
           <Link to={`/student/course/${course._id}`} key={course._id}>
             <div className="flex space-x-4 rounded overflow-hidden shadow-lg p-4 bg-white transform transition-transform duration-300 hover:scale-105">
