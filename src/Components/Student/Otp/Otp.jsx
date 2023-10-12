@@ -42,7 +42,6 @@ const OTPPage = ({
 
       StudentOtpApi(dataToSend)
         .then((response) => {
-          console.log(response);
           if (response.data.message === "Success, account created!") {
             message.success(
               response.data.message || "OTP Verified Successfully"

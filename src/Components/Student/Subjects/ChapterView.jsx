@@ -37,8 +37,6 @@ const ChapterView = () => {
             {chapter.lessons.map((lesson) => {
               const videoId = lesson.videoURL.split("/").pop().split("?")[0];
               const thumbnailURL = `https://img.youtube.com/vi/${videoId}/0.jpg`;
-              console.log(videoId);
-
               return (
                 <div
                   className="lesson-card p-4 bg-orange-200 m-2 rounded-xl shadow-md hover:bg-orange-300 cursor-pointer transform transition-transform duration-300 hover:scale-105"

@@ -17,16 +17,18 @@ const TodaySchedules = () => {
     (state) => state.enrollmentData?.enrolledClass?._id
   );
   useEffect(() => {
-    setIsLoading(true);
-    const headers = {
-      Authorization: localStorage.getItem("studentToken"),
-    };
-    getTodaySchedulesApi(classId, headers)
-      .then((reponse) => {
-        setSchedules(reponse.data);
-        setIsLoading(false);
-      })
-      .catch(() => setIsLoading(false));
+    if (classId) {
+      setIsLoading(true);
+      const headers = {
+        Authorization: localStorage.getItem("studentToken"),
+      };
+      getTodaySchedulesApi(classId, headers)
+        .then((reponse) => {
+          setSchedules(reponse.data);
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
+    }
   }, [classId]);
   return (
     <>

@@ -76,7 +76,6 @@ const Dashboard = () => {
     </div>
   );
   const CustomTooltipForEntity = ({ active, payload }) => {
-    console.log(payload);
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-2 rounded shadow">

@@ -117,8 +117,6 @@ const AddCourse = () => {
         return;
       },
     });
-
-    console.log(courseData);
   };
 
   return (

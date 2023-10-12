@@ -30,7 +30,6 @@ export const addCourse = createAsyncThunk('courseData/addCourse', async (course)
       Authorization: localStorage.getItem("adminToken"),
     };
     const courseData = course.courseData
-    console.log(courseData);
     const response = await addCourseApi(courseData, headers);
     return response.data;
   } catch (err) {
@@ -85,7 +84,6 @@ export const editCourse = createAsyncThunk('courseData/editCourse', async ( cour
       Authorization: localStorage.getItem("adminToken"),
     };
     const courseData = course.courseData
-    console.log(courseData);
     const response = await editCourseApi(courseData.id ,courseData, headers);
     return response.data;
   } catch (err) {

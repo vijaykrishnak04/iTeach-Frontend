@@ -5,7 +5,6 @@ import { getBannersApi } from "../../Services/LandingService";
 
 const Banner = () => {
   const [banners, setBanners] = useState([]);
-  console.log(banners);
   useEffect(() => {
     getBannersApi().then((response) => setBanners(response.data));
   }, []);

@@ -56,7 +56,6 @@ export const cancelExam = createAsyncThunk('examData/cancelExam', async (id) => 
             Authorization: localStorage.getItem("teacherToken"),
         };
         const response = await cancelExamApi(id, headers);
-        console.log(response);
         return response.data;
     } catch (err) {
         message.error(err.response.data.message);

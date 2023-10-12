@@ -122,7 +122,6 @@ const EditCourse = () => {
       },
     });
 
-    console.log(courseData);
   };
 
   return (

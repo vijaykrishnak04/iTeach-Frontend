@@ -19,7 +19,6 @@ const CreateExam = () => {
     subjectId: "",
     subjectName: "",
   });
-  console.log(selectedClassAndSubject);
   const [questionToEdit, setQuestionToEdit] = useState(null);
 
   const [errors, setErrors] = useState({});
@@ -91,8 +90,6 @@ const CreateExam = () => {
     const selectedSubjectObj = selectedClassObj.subjects.find(
       (sub) => sub._id === selectedId
     );
-
-    console.log(selectedSubjectObj);
 
     // It's good practice to check for the existence of the selected subject as well
     if (!selectedSubjectObj) return;

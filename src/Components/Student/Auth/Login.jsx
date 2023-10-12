@@ -35,9 +35,8 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
-  const validateEmail = (value) => {
+  const validateEmail = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    console.log(value);
     if (!emailPattern.test(email)) {
       setEmailError("Please enter a valid email address");
     } else {
@@ -60,7 +59,7 @@ const Login = () => {
       email: email,
       password: password,
     };
-    console.log(formData);
+
     setIsLoading(true);
     dispatch(StudentLogin(formData))
       .then((responseAction) => {
@@ -81,7 +80,6 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
         setPasswordError(error.message ? error.message : "An error occurred.");
       });
   };

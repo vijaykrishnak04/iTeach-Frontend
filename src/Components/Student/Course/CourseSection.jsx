@@ -94,7 +94,6 @@ const CourseSection = () => {
       const headers = {
         Authorization: localStorage.getItem("studentToken"),
       };
-      console.log(selectedCourse._id);
       const verificationResponse = await verifyPaymentApi(
         {
           paymentId: razorpay_payment_id,
@@ -113,7 +112,6 @@ const CourseSection = () => {
         message.error("Payment verification failed. Please contact support.");
       }
     } catch (error) {
-      console.log(error);
       message.error("Error verifying payment. Please contact support.");
     }
   };

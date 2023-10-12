@@ -34,17 +34,12 @@ const CourseManage = () => {
   }, [dispatch]);
 
   const handleEditCourse = (courseId) => {
-    // Find the course from the courses array using the courseId
     const courseData = courses.find((course) => course._id === courseId);
 
     if (!courseData) {
       console.error(`No course found with id: ${courseId}`);
       return; // Exit the function if no course is found
     }
-
-    console.log(`Editing course with id: ${courseId}`);
-
-    // Navigate to EditCourse component and pass the course data
     navigate("/admin/edit-course", { state: { courseData } });
   };
 

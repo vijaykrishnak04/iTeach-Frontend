@@ -62,7 +62,6 @@ export const getSyllabusApi = (headers) => {
 }
 
 export const addSyllabusApi = (syllabusData, headers) => {
-    console.log(syllabusData);
     return axios.post('/admin/add-syllabus', syllabusData, { headers });
 }
 

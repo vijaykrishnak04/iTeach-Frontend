@@ -16,7 +16,6 @@ const ClassModal = ({ isOpen, onClose, onSave, currentSyllabus }) => {
   const [preview, setPreview] = useState(""); // Stores the URL for preview
   const [errors, setErrors] = useState({});
 
-  if (isEditing) console.log(currentSyllabus.subjects);
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {

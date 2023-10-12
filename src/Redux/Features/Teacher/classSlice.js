@@ -44,7 +44,6 @@ export const addChapter = createAsyncThunk('classData/deleteClass', async (formD
       'Content-Type': 'multipart/form-data',
       Authorization: localStorage.getItem("teacherToken"),
     };
-    console.log(formData);
     const response = await addChapterApi(formData, headers);
     return response.data;
   } catch (err) {

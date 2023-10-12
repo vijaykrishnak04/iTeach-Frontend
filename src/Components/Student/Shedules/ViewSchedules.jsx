@@ -51,8 +51,6 @@ const ViewSchedules = () => {
       d.setHours(0, 0, 0, 0);
       dateOptions.push(new Date(d));
     }
-
-    console.log("all dates between start date and enddate", dateOptions);
     return dateOptions;
   };
 
