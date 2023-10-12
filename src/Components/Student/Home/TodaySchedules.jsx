@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 
 const TodaySchedules = () => {
   const [schedules, setSchedules] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const classId = useSelector(
     (state) => state.enrollmentData?.enrolledClass?._id
   );
