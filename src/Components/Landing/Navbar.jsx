@@ -141,14 +141,14 @@ const NavBar = () => {
         className="rounded-xl" // Added to round the corners of the modal
       >
         <div className="flex flex-col space-y-4 items-center justify-center py-6">
-          <Link to="/teacher-login" className="w-1/2">
-            <button className="w-full bg-orange-500 hover:bg-orange-700 active:bg-orange-900 focus:ring focus:ring-orange-200 rounded-lg text-white text-lg font-semibold px-4 py-2 transition-all duration-300">
+          <Link to="/teacher-login" className="w-3/4">
+            <button className="w-full bg-orange-500 hover:bg-orange-700 active:bg-orange-900 focus:ring focus:ring-orange-200 rounded-lg text-white text-lg font-semibold px-2 py-2 transition-all duration-300">
               Login as Teacher
             </button>
           </Link>
 
-          <Link to="/login" className="w-1/2">
-            <button className="w-full bg-orange-500 hover:bg-orange-700 active:bg-orange-900 focus:ring focus:ring-orange-200 rounded-lg text-white text-lg font-semibold px-4 py-2 transition-all duration-300">
+          <Link to="/login" className="w-3/4">
+            <button className="w-full bg-orange-500 hover:bg-orange-700 active:bg-orange-900 focus:ring focus:ring-orange-200 rounded-lg text-white text-lg font-semibold px-2 py-2 transition-all duration-300">
               Login as Student
             </button>
           </Link>

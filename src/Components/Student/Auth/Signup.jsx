@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { StudentAuth } from "../../../Redux/Features/Student/AuthSlice";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
- 
   faEye,
   faEyeSlash,
   faSpinner,
@@ -19,6 +17,7 @@ const Signup = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullNameError, setFullNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,6 +36,20 @@ const Signup = () => {
   const navigate = useNavigate();
 
   // Validation function
+
+  const handleFullNameChange = (e) => {
+    const currentValue = e.target.value;
+    setFullName(currentValue);
+    validateFullName(currentValue);
+  };
+
+  const validateFullName = (value) => {
+    if (validator.isEmpty(value.trim())) {
+      setFullNameError("Full Name is required");
+    } else {
+      setFullNameError("");
+    }
+  };
 
   const handlePhoneNumberChange = (e) => {
     const currentValue = e.target.value;
@@ -74,7 +87,7 @@ const Signup = () => {
   };
 
   const validatePassword = (value) => {
-    if (!validator.isStrongPassword(value)) {
+    if (!validator.isStrongPassword(value.trim())) {
       setPasswordError(
         "Password must be at least 8 characters long and contain at least one letter and one number"
       );
@@ -107,7 +120,8 @@ const Signup = () => {
       emailError ||
       passwordError ||
       confirmPasswordError ||
-      phoneNumberError
+      phoneNumberError ||
+      fullNameError
     ) {
       return;
     }
@@ -125,18 +139,25 @@ const Signup = () => {
       .then((response) => {
         if (StudentAuth.fulfilled.match(response)) {
           setIsLoading(false);
-         
+
           setIsOTPModalVisible(true);
         } else if (response.error || StudentAuth.rejected.match(response)) {
           setIsLoading(false);
-          setEmailError(response.payload.error);
-          toast.error(response.error.message);
+          console.log(response.payload);
+          if (response.payload.includes("email")) {
+            setEmailError("User with this email already exists.");
+          }
+          if (response.payload.includes("phone number")) {
+            setPhoneNumberError("User with this phone number already exists.");
+          }
+          if (response.payload.includes("name")) {
+            setFullNameError("User with this name already exists.");
+          }
         }
       })
       .catch((err) => {
         setIsLoading(false);
-        toast.error(err.response.data.error);
-        console.log(err.response);
+        console.log(err);
       });
   };
 
@@ -169,7 +190,9 @@ const Signup = () => {
                   <div className="mb-4">
                     <label
                       htmlFor="fullName"
-                      className="block text-sm font-medium text-gray-700"
+                      className={`block text-sm font-medium ${
+                        fullNameError ? "text-red-700" : "text-gray-700"
+                      }`}
                     >
                       Full Name
                     </label>
@@ -177,10 +200,20 @@ const Signup = () => {
                       type="text"
                       id="fullName"
                       value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="mt-1 px-4 py-2 w-full rounded-lg focus:outline-none border focus:border-blue-500"
+                      onChange={handleFullNameChange}
+                      className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
+                        fullNameError
+                          ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
+                          : "border focus:border-blue-500"
+                      }`}
                       required
                     />
+                    {fullNameError && (
+                      <p className="mt-2 text-sm text-red-600">
+                        <span className="font-medium">Oops!</span>{" "}
+                        {fullNameError}
+                      </p>
+                    )}
                   </div>
 
                   {/* Email Input */}
