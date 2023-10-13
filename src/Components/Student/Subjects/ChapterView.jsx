@@ -63,7 +63,7 @@ const ChapterView = () => {
         className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-50"
         style={{ overlay: { zIndex: 1000 } }}
       >
-        <div className="relative bg-white rounded-xl shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-8">
+        <div className="relative bg-white rounded-xl shadow-lg w-full sm:w-3/4 md:w-2/3 lg:w-1/2 p-8">
           <h2 className="text-2xl font-bold mb-4">
             {selectedLesson?.lessonTitle}
           </h2>
@@ -71,6 +71,7 @@ const ChapterView = () => {
             className="rounded"
             url={selectedLesson?.videoURL}
             controls
+            width="100%"
           />
           <div className="mt-4 flex flex-row justify-between items-center">
             <a

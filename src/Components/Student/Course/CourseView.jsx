@@ -74,7 +74,12 @@ const CourseView = () => {
             {selectedLesson?.lessonTitle}
           </h2>
 
-          <ReactPlayer url={selectedLesson?.videoURL} controls width="100%" />
+          <ReactPlayer
+            className="rounded"
+            url={selectedLesson?.videoURL}
+            controls
+            width="100%"
+          />
 
           <div className="mt-4 flex flex-row justify-between items-center">
             <a

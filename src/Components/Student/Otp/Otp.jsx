@@ -71,6 +71,12 @@ const OTPPage = ({
     }
   };
 
+  const focusBack = (index, value) => {
+    if (index > 0 && value === "") {
+      otpRefs.current[index - 1].focus();
+    }
+  };
+
   const otpValue = () => {
     let value = "";
     otpRefs.current.forEach((input) => {
@@ -81,15 +87,9 @@ const OTPPage = ({
 
   const handleResendOtp = () => {
     try {
-      if (StudentAuth) {
-        const email = StudentAuth.email;
-        resend(email).then((response) => {
-          if (response.status === 200) {
-            setTimeLeft(180);
-            setShowResend(false);
-          }
-        });
-      }
+      resend();
+      setTimeLeft(180);
+      setShowResend(false);
     } catch (err) {
       console.log(err);
     }
@@ -98,9 +98,9 @@ const OTPPage = ({
     <>
       <Modal
         title={
-          <div className="text-center text-lg">
+          <div className="text-center text-base">
             <span style={{ borderBottom: "2px solid lightcoral" }}>
-              Enter Otp
+              Enter the OTP from your email.
             </span>
           </div>
         }
@@ -133,6 +133,11 @@ const OTPPage = ({
                       otpValue();
                     }, 0);
                   }}
+                  onKeyUp={(e) => {
+                    if (e.key === "Backspace" || e.key === "Delete") {
+                      focusBack(index, e.target.value);
+                    }
+                  }}
                   style={{ fontSize: "1.5rem" }}
                 />
               ))}
@@ -151,7 +156,7 @@ const OTPPage = ({
             {showResend ? (
               <Button
                 type="button"
-                onClick={() => handleResendOtp}
+                onClick={handleResendOtp}
                 className="bg-red-500 hover:bg-red-600 text-white flex items-center space-x-1"
               >
                 <FontAwesomeIcon icon={faRedo} className="align-middle" />

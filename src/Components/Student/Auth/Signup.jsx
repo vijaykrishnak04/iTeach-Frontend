@@ -110,22 +110,7 @@ const Signup = () => {
     }
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Validate all fields before submission
-
-    if (
-      emailError ||
-      passwordError ||
-      confirmPasswordError ||
-      phoneNumberError ||
-      fullNameError
-    ) {
-      return;
-    }
-
+  const sendData = () => {
     const values = {
       fullName,
       email,
@@ -139,7 +124,6 @@ const Signup = () => {
       .then((response) => {
         if (StudentAuth.fulfilled.match(response)) {
           setIsLoading(false);
-
           setIsOTPModalVisible(true);
         } else if (response.error || StudentAuth.rejected.match(response)) {
           setIsLoading(false);
@@ -159,6 +143,25 @@ const Signup = () => {
         setIsLoading(false);
         console.log(err);
       });
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Validate all fields before submission
+
+    if (
+      emailError ||
+      passwordError ||
+      confirmPasswordError ||
+      phoneNumberError ||
+      fullNameError
+    ) {
+      return;
+    }
+
+    sendData();
   };
 
   const Student = useSelector(
@@ -369,6 +372,7 @@ const Signup = () => {
           onClose={() => setIsOTPModalVisible(false)}
           StudentAuth={Student}
           StudentOtpApi={StudentOtpApi}
+          resend={sendData}
         />
       </div>
     </>

@@ -80,9 +80,7 @@ const ChatsView = () => {
   }, [activeChat.studentId, dispatch]);
 
   const handleSendMessage = () => {
-    if (!activeChat) {
-      return;
-    }
+    if (!activeChat || !yourMessage.trim()) return;
     const outgoingMessage = {
       recieverId: activeChat.studentId,
       senderId: teacherData._id,

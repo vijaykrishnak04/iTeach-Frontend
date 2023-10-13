@@ -24,7 +24,7 @@ const TodaySchedules = () => {
       };
       getTodaySchedulesApi(classId, headers)
         .then((reponse) => {
-          setSchedules(reponse.data);
+          setSchedules(reponse.data || []);
           setIsLoading(false);
         })
         .catch(() => setIsLoading(false));
