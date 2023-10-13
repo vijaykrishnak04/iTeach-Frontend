@@ -9,6 +9,8 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import ForgotPasswordModal from "./ForgotPasswordModal";
+import validator from "validator";
+
 const Login = () => {
   // State to hold the user's input
   const [email, setEmail] = useState("");
@@ -27,7 +29,7 @@ const Login = () => {
   const handleEmailChange = (e) => {
     const currentValue = e.target.value;
     setEmail(currentValue);
-    validateEmail(currentValue); // Add this line
+    validateEmail(currentValue);
   };
 
   const handlePasswordChange = (e) => {
@@ -35,9 +37,8 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
-  const validateEmail = () => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
+  const validateEmail = (value) => {
+    if (!validator.isEmail(value)) {
       setEmailError("Please enter a valid email address");
     } else {
       setEmailError("");
@@ -48,10 +49,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    validateEmail();
-
     if (emailError || passwordError) {
-      // If there's an error, we stop here and don't proceed with the login attempt.
       return;
     }
 
@@ -108,27 +106,25 @@ const Login = () => {
                   <label
                     htmlFor="email"
                     className={`block text-sm font-medium ${
-                      emailError
-                        ? "text-red-700 dark:text-red-500"
-                        : "text-gray-700"
+                      emailError ? "text-red-700" : "text-gray-700"
                     }`}
                   >
                     Email
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     id="email"
+                    value={email}
+                    onChange={handleEmailChange}
                     className={`mt-1 px-4 py-2 w-full rounded-lg focus:outline-none ${
                       emailError
                         ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500"
                         : "border focus:border-blue-500"
                     }`}
-                    value={email}
-                    onChange={handleEmailChange}
                     required
                   />
                   {emailError && (
-                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                    <p className="mt-2 text-sm text-red-600">
                       <span className="font-medium">Oops!</span> {emailError}
                     </p>
                   )}

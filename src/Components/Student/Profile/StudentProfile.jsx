@@ -30,8 +30,8 @@ const StudentProfile = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const formatDate = (isoDate) => {
-    if(!isoDate){
-      return null
+    if (!isoDate) {
+      return null;
     }
     const date = new Date(isoDate);
     const year = date.getFullYear();
@@ -125,6 +125,7 @@ const StudentProfile = () => {
       const formData = new FormData();
 
       formData.append("photo", file);
+      formData.append("public_id", studentData?.studentImage?.public_id);
 
       try {
         // Dispatch the editStudent asyncThunk
@@ -189,7 +190,8 @@ const StudentProfile = () => {
 
           <div className="mt-4 flex flex-col">
             <p className="text-lg text-start mb-2 p-2">
-              <span className="font-semibold ">Current Class:</span> {currentClassName}
+              <span className="font-semibold ">Current Class:</span>{" "}
+              {currentClassName}
             </p>
             <p className="text-lg text-start mb-2 p-2">
               <span className="font-semibold">Joined Date:</span>{" "}

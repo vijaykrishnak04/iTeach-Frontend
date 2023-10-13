@@ -6,9 +6,10 @@ import {
   getCoursesApi,
   verifyPaymentApi,
 } from "../../../Services/Student";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { addPurchasedCourse } from "../../../Redux/Features/Student/CoursesSlice";
 
 // eslint-disable-next-line react/prop-types
 const CourseSection = () => {
@@ -20,6 +21,8 @@ const CourseSection = () => {
   const studentId = useSelector((state) => state.studentData.studentData._id);
   const [coursesData, setCoursesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const dispatch = useDispatch();
 
   const filteredCourses = coursesData
     ? coursesData.filter((course) => {
@@ -106,8 +109,13 @@ const CourseSection = () => {
       );
 
       const data = verificationResponse.data;
+
       if (data.success) {
-        message.success("Payment successful!");
+        message.success(data.message);
+        setCoursesData((previousCourses) =>
+          previousCourses.filter((course) => course._id !== selectedCourse._id)
+        );
+        dispatch(addPurchasedCourse(data.course));
       } else {
         message.error("Payment verification failed. Please contact support.");
       }
@@ -132,7 +140,7 @@ const CourseSection = () => {
           <FontAwesomeIcon icon={faSpinner} spin />{" "}
         </div> // This is where your loading animation will go
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {currentCourses.map((course) => (
             <div
               key={course._id}

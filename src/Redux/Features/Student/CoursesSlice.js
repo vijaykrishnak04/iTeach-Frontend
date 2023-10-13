@@ -51,7 +51,11 @@ const courseSlice = createSlice({
     reducers: {
         resetCourseState: (state) => {
             return initialState;
-        }
+        },
+        addPurchasedCourse: (state, action) => {
+            // Assuming action.payload contains the purchased course object
+            state.courseList.push(action.payload);
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -86,6 +90,6 @@ const courseSlice = createSlice({
     },
 });
 
-export const { resetCourseState } = courseSlice.actions;
+export const { resetCourseState, addPurchasedCourse } = courseSlice.actions;
 export default courseSlice.reducer;
 

@@ -179,10 +179,11 @@ export const AuthSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(editStudent.fulfilled, (state, action) => {
+                console.log(action);
                 state.isLoading = false;
                 if (action.payload && action.payload.success) {
                     state.isSuccess = true;
-                    state.studentData = action.payload.data
+                    state.studentData = action.payload.student
                 } else {
                     state.isError = true;
                     state.message = action.payload.error;
