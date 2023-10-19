@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { teacherLogin } from "../../../Redux/Features/Teacher/TeacherProfileSlice";
 
@@ -10,7 +10,9 @@ const TeacherLogin = () => {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Added to control password visibility
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -38,8 +40,10 @@ const TeacherLogin = () => {
     };
 
     // Dispatching the teacherLogin async thunk
+    setIsLoading(true);
     dispatch(teacherLogin(formData))
       .then((responseAction) => {
+        setIsLoading(false);
         if (teacherLogin.fulfilled.match(responseAction)) {
           const jwtToken = responseAction.payload.token;
           localStorage.setItem("teacherToken", jwtToken);
@@ -144,6 +148,7 @@ const TeacherLogin = () => {
                     type="submit"
                     className="px-4 py-2 rounded-3xl w-60 h-14 font-bold text-white bg-green-900 hover:bg-green-700 focus:outline-none"
                   >
+                    {isLoading && <FontAwesomeIcon icon={faSpinner} spin />}{" "}
                     LOGIN
                   </button>
                 </div>

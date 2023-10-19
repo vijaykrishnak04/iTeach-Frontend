@@ -25,7 +25,7 @@ const TeacherProfile = () => {
   const [email, setEmail] = useState(teacherData?.email || "");
   const [isEditing, setIsEditing] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  
   const onImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0]);
