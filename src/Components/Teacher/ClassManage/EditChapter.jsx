@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, message } from "antd";
-import { editChapter } from "../../../Redux/Features/Teacher/ClassSlice";
+import { editChapter } from "../../../Redux/Features/Teacher/classSlice";
 
 const EditChapter = () => {
   const [chapterTitle, setChapterTitle] = useState("");
