@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, message } from "antd";
 // Remember to adjust the path for your slice.
-import { addChapter } from "../../../Redux/Features/Teacher/ClassSlice";
+import { addChapter } from "../../../Redux/Features/Teacher/classSlice";
 import validator from "validator";
 
 const AddChapter = () => {
@@ -49,7 +49,7 @@ const AddChapter = () => {
 
     if (validator.isEmpty(chapterTitle.trim())) {
       newErrors.chapterTitle = "Chapter title is required!";
-    }
+    } 
 
     if (lessons.length === 0) {
       newErrors.lessons = "At least one lesson is required!";
