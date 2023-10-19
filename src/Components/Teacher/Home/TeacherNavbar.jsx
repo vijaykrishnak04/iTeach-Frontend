@@ -8,11 +8,16 @@ import {
   faPencilAlt,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
 
 const TeacherNavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const teacherData = useSelector(
+    (state) => state.teacherProfileData?.teacherProfileData
+  );
 
   const handleLogout = () => {
     try {
@@ -67,6 +72,9 @@ const TeacherNavBar = () => {
             <img src="/logo.png" className="h-10 mr-3" alt="i-Teach Logo" />
           </Link>
           <div className="flex md:order-2">
+          <p className="text-center font-semibold p-2">
+              {teacherData.fullName}
+            </p>
             <Dropdown overlay={teacherMenu} placement="bottomRight" arrow>
               <button
                 type="button"
@@ -75,16 +83,24 @@ const TeacherNavBar = () => {
                 aria-expanded="false"
               >
                 <span className="sr-only">Open user menu</span>
-                <img
-                  className="w-8 h-8 rounded-full border-2 border-gray-600"
-                  src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                  alt="user logo"
-                />
+                {teacherData?.teacherImage?.url ? (
+                  <img
+                    className="w-10 h-10 rounded-full border-2"
+                    src={teacherData?.teacherImage?.url}
+                    alt="user logo"
+                  />
+                ) : (
+                  <img
+                    className="w-10 h-10 rounded-full border-2"
+                    src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                    alt="user logo"
+                  />
+                )}
               </button>
             </Dropdown>
             <button
               type="button"
-              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm  md:hidden "
               onClick={toggleMenu}
             >
               <span className="sr-only">Open main menu</span>
