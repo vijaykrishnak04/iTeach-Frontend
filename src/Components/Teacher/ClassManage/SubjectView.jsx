@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { getClassById } from "../../../Redux/Features/Teacher/ClassSlice"; 
+import { getClassById } from "../../../Redux/Features/Teacher/ClassSlice.js"; 
 import ChapterManage from "./ChapterManage";
 
 const SubjectView = () => {
