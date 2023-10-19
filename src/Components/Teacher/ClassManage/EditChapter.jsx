@@ -4,8 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal, message } from "antd";
-// Remember to adjust the path for your slice.
-import { editChapter } from "../../../Redux/Features/Teacher/classSlice"; // Assume you've created this slice for updating
+import { editChapter } from "../../../Redux/Features/Teacher/ClassSlice";
 
 const EditChapter = () => {
   const [chapterTitle, setChapterTitle] = useState("");
