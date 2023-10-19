@@ -16,11 +16,7 @@ const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
     try {
       setIsModalOpen(false)
       const amount = selectedClass?.price * 100; // Convert amount to smallest unit for Razorpay
-
-      const headers = {
-        Authorization: localStorage.getItem("studentToken"),
-      };
-      const response = await createOrderApi(amount, headers);
+      const response = await createOrderApi(amount);
       const data = response.data;
 
       const options = {
@@ -49,9 +45,7 @@ const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
       const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
         response;
 
-      const headers = {
-        Authorization: localStorage.getItem("studentToken"),
-      };
+     
       const verificationResponse = await verifyPaymentApi(
         {
           paymentId: razorpay_payment_id,
@@ -59,8 +53,7 @@ const ClassSection = ({ studentData, classData, onPaymentSuccess = null }) => {
           signature: razorpay_signature,
           classId: selectedClass?._id,
           studentId: studentData,
-        },
-        headers
+        }
       );
 
       const data = verificationResponse.data;

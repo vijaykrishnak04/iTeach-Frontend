@@ -42,10 +42,7 @@ const CourseSection = () => {
 
   useEffect(() => {
     setIsLoading(true); // Start the loading
-    const headers = {
-      Authorization: localStorage.getItem("studentToken"),
-    };
-    getCoursesApi(studentId, headers)
+    getCoursesApi(studentId)
       .then((response) => {
         setCoursesData(response.data);
         setIsLoading(false); // End the loading
@@ -62,11 +59,7 @@ const CourseSection = () => {
     try {
       setIsModalOpen(false);
       const amount = selectedCourse?.price * 100; // Convert amount to smallest unit for Razorpay
-
-      const headers = {
-        Authorization: localStorage.getItem("studentToken"),
-      };
-      const response = await createOrderApi(amount, headers);
+      const response = await createOrderApi(amount);
       const data = response.data;
 
       const options = {
@@ -93,10 +86,6 @@ const CourseSection = () => {
     try {
       const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
         response;
-
-      const headers = {
-        Authorization: localStorage.getItem("studentToken"),
-      };
       const verificationResponse = await verifyPaymentApi(
         {
           paymentId: razorpay_payment_id,
@@ -104,8 +93,7 @@ const CourseSection = () => {
           signature: razorpay_signature,
           courseId: selectedCourse._id,
           studentId: studentId,
-        },
-        headers
+        }
       );
 
       const data = verificationResponse.data;

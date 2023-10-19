@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { StudentSignupApi, studentLoginApi } from '../../../Services/LandingService'
 import { editStudentApi, getStudentByIdApi } from '../../../Services/Student';
-import { Navigate } from 'react-router-dom';
-import useLogout from '../../../Components/Student/Hooks/useLogout';
 
 
 
@@ -59,16 +57,10 @@ export const getStudentById = createAsyncThunk(
     "studentData/getStudentById",
     async (studentId, thunkAPI) => {
         try {
-            const headers = {
-                Authorization: localStorage.getItem("studentToken"),
-            };
-            const response = await getStudentByIdApi(studentId, headers);
+          
+            const response = await getStudentByIdApi(studentId);
             return response.data;
         } catch (error) {
-            const { handleLogout } = useLogout();
-            if (error.response.status === 401 && error.response.data.message === 'This student is blocked.') {
-                handleLogout()
-            }
             if (error.response && error.response.data) {
                 return thunkAPI.rejectWithValue(error.response.data);
             }
@@ -82,10 +74,8 @@ export const editStudent = createAsyncThunk(
     "studentData/editStudent",
     async ({ studentId, studentData }, thunkAPI) => {
         try {
-            const headers = {
-                Authorization: localStorage.getItem("studentToken"),
-            };
-            const response = await editStudentApi(studentId, studentData, headers);
+
+            const response = await editStudentApi(studentId, studentData);
 
             if (response.status !== 200) { // Assuming 200 is the success code
                 throw new Error(response.data.error || 'Unexpected error occurred.');
@@ -94,10 +84,6 @@ export const editStudent = createAsyncThunk(
             return response.data;
 
         } catch (error) {
-            if (error.response.status === 401 && error.response.data.message === 'This student is blocked.') {
-                localStorage.removeItem('studentToken')
-                Navigate('/login')
-            }
             if (error.response && error.response.data) {
                 // Use thunkAPI.rejectWithValue to dispatch a rejected action
                 return thunkAPI.rejectWithValue(error.response.data);

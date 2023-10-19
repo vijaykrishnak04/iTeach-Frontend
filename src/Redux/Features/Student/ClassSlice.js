@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getClassByIdApi, getClassesApi } from '../../../Services/Student'; // Changed the imported functions to the "class" versions
 import { message } from 'antd';
 
-import useLogout from '../../../Components/Student/Hooks/useLogout';
-
 const initialState = {
     classList: [], // Changed to classList
     currentClass: null, // Changed to currentClass
@@ -15,16 +13,9 @@ const initialState = {
 
 export const getClasses = createAsyncThunk('classData/getClasses', async () => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("studentToken"),
-        };
-        const response = await getClassesApi(headers);
+        const response = await getClassesApi();
         return response.data;
     } catch (err) {
-        const { handleLogout } = useLogout();
-        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-            handleLogout()
-        }
         message.error(err.response.data.message);
         throw err;
     }
@@ -32,16 +23,9 @@ export const getClasses = createAsyncThunk('classData/getClasses', async () => {
 
 export const getClassById = createAsyncThunk('classData/getClassById', async (classId) => { // Renamed the variable to classId
     try {
-        const headers = {
-            Authorization: localStorage.getItem("studentToken"),
-        };
-        const response = await getClassByIdApi(classId, headers);
+        const response = await getClassByIdApi(classId);
         return response.data;
     } catch (err) {
-        const { handleLogout } = useLogout();
-        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-            handleLogout()
-        }
         message.error(err.response.data.message);
         throw err;
     }

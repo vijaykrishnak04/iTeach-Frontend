@@ -19,10 +19,7 @@ const TodaySchedules = () => {
   useEffect(() => {
     if (classId) {
       setIsLoading(true);
-      const headers = {
-        Authorization: localStorage.getItem("studentToken"),
-      };
-      getTodaySchedulesApi(classId, headers)
+      getTodaySchedulesApi(classId)
         .then((reponse) => {
           setSchedules(reponse.data || []);
           setIsLoading(false);

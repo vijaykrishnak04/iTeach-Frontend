@@ -1,93 +1,91 @@
-import axios from '../../axios'
+import { teacherInstance } from "../../axios"
 
-export const teacherLoginApi = (formData) => {
-    return axios.post('/teacher/login', formData)
-}
 
 //profile
-export const teacherEditProfileApi = (headers, formData) => {
-    return axios.post('/teacher/edit-profile', formData, { headers })
+export const teacherEditProfileApi = (formData) => {
+    return teacherInstance.post('/edit-profile', formData)
 }
 
-export const changePasswordApi = (teacherId, credentials, headers) => {
-    return axios.put(`/teacher/change-password/${teacherId}`, credentials, { headers })
+export const changePasswordApi = (teacherId, credentials) => {
+    return teacherInstance.put(`/change-password/${teacherId}`, credentials)
 }
 
-export const getClassesApi = (headers) => {
-    return axios.get('/teacher/get-classes', { headers });
+//classes
+export const getClassesApi = () => {
+    return teacherInstance.get('/get-classes');
 }
 
-export const getClassByIdApi = (headers, id) => {
-    return axios.get(`/teacher/get-class/${id}`, { headers });
+export const getClassByIdApi = (id) => {
+    return teacherInstance.get(`/get-class/${id}`);
 }
 
-export const addChapterApi = (formData, headers) => {
-    return axios.post('/teacher/add-chapter', formData, { headers });
+export const addChapterApi = (formData) => {
+    return teacherInstance.post('/add-chapter', formData);
 }
 
-export const editChapterApi = (formData, headers) => {
-    return axios.patch('/teacher/edit-chapter', formData, { headers })
+export const editChapterApi = (formData) => {
+    return teacherInstance.patch('/edit-chapter', formData)
 }
 
 // Exam related API calls
-export const createExamApi = (formData, headers) => {
-    return axios.post('/teacher/create-exam', formData, { headers });
+export const createExamApi = (formData) => {
+    return teacherInstance.post('/create-exam', formData);
 }
 
-export const getExamsApi = (headers) => {
-    return axios.get('/teacher/get-exams', { headers });
+export const getExamsApi = () => {
+    return teacherInstance.get('/get-exams');
 }
 
-export const editExamApi = (formData, headers) => {
-    return axios.patch('/teacher/edit-exam', formData, { headers });
+export const editExamApi = (formData) => {
+    return teacherInstance.patch('/edit-exam', formData);
 }
 
-export const cancelExamApi = (id, headers) => {
-    return axios.delete(`/teacher/cancel-exam/${id}`, { headers });
+export const cancelExamApi = (id) => {
+    return teacherInstance.delete(`/cancel-exam/${id}`);
 }
 
 //student related API calls
-export const getStudentsApi = (headers) => {
-    return axios.get('/teacher/get-all-students', { headers });
+export const getStudentsApi = () => {
+    return teacherInstance.get('/get-all-students');
 }
 
-export const getStudentByIdsApi = (studentIds, headers) => {
+export const getStudentByIdsApi = (studentIds) => {
     const idsString = studentIds.join(',');
-    return axios.get(`/teacher/get-students?ids=${idsString}`, { headers });
+    return teacherInstance.get(`/get-students?ids=${idsString}`);
 }
 
-export const blockStudent = (id, headers) => {
-    return axios.patch('/teacher/block-student', { id }, { headers });
+export const blockStudent = (id) => {
+    return teacherInstance.patch('/block-student', { id });
 }
 
-export const unblockStudent = (id, headers) => {
-    return axios.patch('/teacher/unblock-student', { id }, { headers });
+export const unblockStudent = (id) => {
+    return teacherInstance.patch('/unblock-student', { id });
 }
 
 // Chat related API calls
 
-export const fetchChatListApi = (teacherId, headers) => {
-    return axios.get(`/teacher/chat/${teacherId}`, { headers });
+export const fetchChatListApi = (teacherId) => {
+    return teacherInstance.get(`/chat/${teacherId}`);
 }
 
-export const fetchChatMessagesApi = (studentId, headers) => {
-    return axios.get(`/teacher/chat/messages?studentId=${studentId}`, { headers });
+export const fetchChatMessagesApi = (studentId) => {
+    return teacherInstance.get(`/chat/messages?studentId=${studentId}`);
 }
 
 //schedules
 
-export const addScheduleApi = (formData, headers) => {
-    return axios.post('/teacher/add-schedule', formData, { headers })
+export const addScheduleApi = (formData) => {
+    return teacherInstance.post('/add-schedule', formData)
 }
 
-export const getSchedulesApi = (headers) => {
-    return axios.get('/teacher/get-schedules', { headers })
+export const getSchedulesApi = () => {
+    return teacherInstance.get('/get-schedules')
 }
 
-export const getTodaySchedulesApi = (headers) => {
-    return axios.get('/teacher/get-today-schedules', { headers })
+export const getTodaySchedulesApi = () => {
+    return teacherInstance.get('/get-today-schedules')
 }
 
-export const deleteScheduleApi = (id, headers) => {
-    return axios.delete(`/teacher/delete-schedule/${id}`, { headers })
+export const deleteScheduleApi = (id) => {
+    return teacherInstance.delete(`/delete-schedule/${id}`)
 }

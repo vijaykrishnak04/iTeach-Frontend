@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { fetchChatMessagesApi, fetchChatListApi } from '../../../Services/Student';
-import { Navigate } from 'react-router-dom';
-import useLogout from '../../../Components/Student/Hooks/useLogout';
+
 
 const initialState = {
     chatMessages: [],
@@ -16,17 +15,10 @@ const initialState = {
 // Fetch chat messages with a student
 export const fetchChatMessages = createAsyncThunk('chatData/fetchChatMessages', async (teacherId) => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("studentToken"),
-        };
-        const response = await fetchChatMessagesApi(teacherId, headers)
+        const response = await fetchChatMessagesApi(teacherId)
         return response.data;
     } catch (err) {
         message.error(err.response.data.message);
-        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-            localStorage.removeItem('studentToken')
-            Navigate('/login')
-        }
         throw err;
     }
 });
@@ -34,17 +26,10 @@ export const fetchChatMessages = createAsyncThunk('chatData/fetchChatMessages', 
 // Fetch list of students who've messaged the teacher
 export const fetchChatList = createAsyncThunk('chatData/fetchChatList', async (id) => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("studentToken"),
-        };
-        const response = await fetchChatListApi(id, headers)
+        const response = await fetchChatListApi(id)
         return response.data;
     } catch (err) {
         message.error(err.response.data.message);
-        const { handleLogout } = useLogout();
-        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-            handleLogout()
-        }
         throw err;
     }
 });

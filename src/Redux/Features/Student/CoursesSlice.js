@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getCourseByIdApi, getPurchasedCoursesApi } from '../../../Services/Student';
 import { message } from 'antd';
-import useLogout from '../../../Components/Student/Hooks/useLogout';
 
 const initialState = {
     courseList: [],
@@ -14,32 +13,19 @@ const initialState = {
 
 export const getCourses = createAsyncThunk('courseData/getCourses', async (studentId) => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("studentToken"),
-        };
-        const response = await getPurchasedCoursesApi(studentId, headers);
+        const response = await getPurchasedCoursesApi(studentId);
         return response.data;
     } catch (err) {
-        const { handleLogout } = useLogout();
-        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-            handleLogout()
-        }
+        message.error(err)
         throw err;
     }
 });
 
 export const getCourseById = createAsyncThunk('courseData/getCourseById', async (courseId) => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("studentToken"),
-        };
-        const response = await getCourseByIdApi(courseId, headers);
+        const response = await getCourseByIdApi(courseId);
         return response.data;
     } catch (err) {
-        const { handleLogout } = useLogout();
-        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-            handleLogout()
-        }
         message.error(err.response.data.message);
         throw err;
     }

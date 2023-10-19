@@ -54,11 +54,7 @@ const ChatsView = () => {
 
   useEffect(() => {
     socket.emit("register", studentData._id);
-
-    const headers = {
-      Authorization: localStorage.getItem("studentToken"),
-    };
-    getTeachersApi(headers).then((response) => setTeachers(response.data));
+    getTeachersApi().then((response) => setTeachers(response.data));
     dispatch(fetchChatList(studentData._id));
 
     return () => {
@@ -69,7 +65,7 @@ const ChatsView = () => {
   useEffect(() => {
     socket.on("recieve-message", (incomingMessage) => {
       dispatch(addMessageToChatList(incomingMessage));
-      console.log(incomingMessage.senderId + " " + activeChat.teacherId)
+      console.log(incomingMessage.senderId + " " + activeChat.teacherId);
       if (incomingMessage.senderId === activeChat.teacherId) {
         setMessages((prevMessages) => [...prevMessages, incomingMessage]);
       }

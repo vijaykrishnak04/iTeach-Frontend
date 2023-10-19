@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { checkIfStudentHasEnrolledApi } from '../../../Services/Student';
 import { message } from 'antd';
 
-import useLogout from '../../../Components/Student/Hooks/useLogout';
-
 const initialState = {
     enrolledClass: null,
     isLoading: false,
@@ -16,16 +14,9 @@ export const checkIfStudentHasEnrolled = createAsyncThunk(
     'enrollmentData/checkIfStudentHasEnrolled',
     async (studentId) => {
         try {
-            const headers = {
-                Authorization: localStorage.getItem("studentToken"),
-            };
-            const response = await checkIfStudentHasEnrolledApi(studentId, headers);
+            const response = await checkIfStudentHasEnrolledApi(studentId);
             return response.data;
         } catch (err) {
-            const { handleLogout } = useLogout();
-            if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-                handleLogout()
-            }
             message.error(err.response.data.message);
             throw err;
         }

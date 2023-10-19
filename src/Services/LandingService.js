@@ -1,29 +1,33 @@
-import axios from "../../axios";
+import { axiosInstance } from "../../axios"
 
 export const StudentSignupApi = (values) => {
-    return axios.post('/signup', values)
+    return axiosInstance.post('/signup', values)
 }
 
 export const StudentOtpApi = (StudentAuth) => {
-    return axios.post('/otp', StudentAuth)
+    return axiosInstance.post('/otp', StudentAuth)
 }
 
 export const studentLoginApi = (values) => {
-    return axios.post('/login', values)
+    return axiosInstance.post('/login', values)
+}
+
+export const teacherLoginApi = (formData) => {
+    return axiosInstance.post('/teacher/login', formData)
 }
 
 export const getBannersApi = () => {
-    return axios.get('/get-banners')
+    return axiosInstance.get('/get-banners')
 }
 
 export const getCoursesApi = () => {
-    return axios.get('/get-courses')
+    return axiosInstance.get('/get-courses')
 }
 
 export const getTutorsApi = () => {
-    return axios.get('/get-tutors')
+    return axiosInstance.get('/get-tutors')
 }
 
 export const getPricingApi = () => {
-    return axios.get('/get-pricing')
+    return axiosInstance.get('/get-pricing')
 }

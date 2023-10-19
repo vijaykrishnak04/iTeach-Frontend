@@ -26,10 +26,7 @@ export const getClasses = createAsyncThunk('classData/getClasses', async () => {
 
 export const getClassById = createAsyncThunk('classData/getClassById', async (id) => {
   try {
-    const headers = {
-      Authorization: localStorage.getItem("teacherToken"),
-    };
-    const response = await getClassByIdApi(headers, id);
+    const response = await getClassByIdApi(id);
     return response.data;
   } catch (err) {
     message.error(err.response.data.message);

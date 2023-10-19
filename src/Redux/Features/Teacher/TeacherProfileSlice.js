@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { teacherEditProfileApi, teacherLoginApi } from "../../../Services/Teacher";
+import { teacherEditProfileApi } from "../../../Services/Teacher";
 import { message } from "antd";
+import { teacherLoginApi } from "../../../Services/LandingService";
 
 const initialState = {
     teacherProfileData: [],
@@ -11,10 +12,7 @@ const initialState = {
 }
 export const teacherLogin = createAsyncThunk('teacher/teacherLogin', async (formData) => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("teacherToken"),
-        };
-        const response = await teacherLoginApi(formData, headers);
+        const response = await teacherLoginApi(formData);
         return response.data;
     } catch (err) {
         message.error(err.response.data.message);
@@ -24,10 +22,7 @@ export const teacherLogin = createAsyncThunk('teacher/teacherLogin', async (form
 
 export const teacherEditProfile = createAsyncThunk('teacher/teacherEditProfile', async (formData) => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("teacherToken"),
-        };
-        const response = await teacherEditProfileApi(headers, formData);
+        const response = await teacherEditProfileApi(formData);
         return response.data;
     } catch (err) {
         message.error(err.response.data.message);

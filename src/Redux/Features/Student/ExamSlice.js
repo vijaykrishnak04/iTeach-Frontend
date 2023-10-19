@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getExamsByIdsApi } from '../../../Services/Student';
 import { message } from 'antd';
 
-import useLogout from '../../../Components/Student/Hooks/useLogout';
-
 const initialState = {
     examList: [],
     isLoading: false,
@@ -14,16 +12,9 @@ const initialState = {
 
 export const getExamsByIds = createAsyncThunk('examData/getExamsByIds', async (examIds) => {
     try {
-        const headers = {
-            Authorization: localStorage.getItem("studentToken"),
-        };
-        const response = await getExamsByIdsApi(examIds, headers);
+        const response = await getExamsByIdsApi(examIds);
         return response.data;
     } catch (err) {
-        const { handleLogout } = useLogout();
-        if (err.response.status === 401 && err.response.data.message === 'This student is blocked.') {
-            handleLogout()
-        }
         message.error(err.response.data);
         throw err;
     }

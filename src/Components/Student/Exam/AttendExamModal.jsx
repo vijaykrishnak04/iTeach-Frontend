@@ -59,12 +59,8 @@ const AttendExamModal = ({ examData = {}, isVisible, onClose }) => {
       selectedAnswers,
       studentId,
     };
-    const headers = {
-      Authorization: localStorage.getItem("studentToken"),
-    };
-
     // Make the API call
-    validateExamApi(examId, data, headers)
+    validateExamApi(examId, data)
       .then((response) => {
         if (response.status === 200) {
           // Assuming 200 status indicates success, modify as per your API's specifications
