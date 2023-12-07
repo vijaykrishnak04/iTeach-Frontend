@@ -12,8 +12,6 @@ import {
 const AdminNavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const adminToken = localStorage?.getItem("adminToken");
-
   const handleLogout = async () => {
     try {
       localStorage.removeItem("adminToken");
@@ -46,15 +44,6 @@ const AdminNavBar = () => {
 
   const userMenu = (
     <Menu>
-      {adminToken ? (
-        <Menu.Item key="1">
-          <Link to="/student/profile">Profile</Link>
-        </Menu.Item>
-      ) : (
-        <Menu.Item key="2">
-          <Link to="/login">Student Login</Link>
-        </Menu.Item>
-      )}
       <Menu.Item key="3" onClick={handleLogout}>
         Sign Out
       </Menu.Item>

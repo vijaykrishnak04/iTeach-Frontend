@@ -189,14 +189,20 @@ const StudentProfile = () => {
           <h2 className="mt-4 text-xl">{student.name}</h2>
 
           <div className="mt-4 flex flex-col">
-            <p className="text-lg text-start mb-2 p-2">
-              <span className="font-semibold ">Current Class:</span>{" "}
-              {currentClassName}
-            </p>
-            <p className="text-lg text-start mb-2 p-2">
-              <span className="font-semibold">Joined Date:</span>{" "}
-              {formatDate(studentData?.classRef?.joinedDate)}
-            </p>
+            {currentClassName && (
+              <>
+                {" "}
+                <p className="text-lg text-start mb-2 p-2">
+                  <span className="font-semibold ">Current Class:</span>{" "}
+                  {currentClassName}
+                </p>
+                <p className="text-lg text-start mb-2 p-2">
+                  <span className="font-semibold">Joined Date:</span>{" "}
+                  {formatDate(studentData?.classRef?.joinedDate)}
+                </p>
+              </>
+            )}
+
             <p className="text-xl text-start font-bold mb-3 p-2">
               Change Class
             </p>

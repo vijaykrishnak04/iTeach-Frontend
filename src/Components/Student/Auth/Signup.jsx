@@ -89,7 +89,7 @@ const Signup = () => {
   const validatePassword = (value) => {
     if (!validator.isStrongPassword(value.trim())) {
       setPasswordError(
-        "Password must be at least 8 characters long and contain at least one letter and one number"
+        "Password must be at least 8 characters long and contain at least one letter, one number and one special character(@,#,$)"
       );
     } else {
       setPasswordError("");

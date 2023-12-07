@@ -27,7 +27,7 @@ const ExamView = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (examIds.length !== 0 && examIds) {
+    if (examIds && examIds.length !== 0) {
       dispatch(getExamsByIds(examIds));
     }
   }, [dispatch, examIds]);
